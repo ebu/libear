@@ -1,0 +1,4 @@
+exhale ~= 0.2
+sphinx_rtd_theme
+m2r
+sphinxcontrib-bibtex

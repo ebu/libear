@@ -1,0 +1,35 @@
+include(CMakeFindDependencyMacro)
+
+@PACKAGE_INIT@
+
+set_and_check(@PROJECT_NAME@_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@INSTALL_INCLUDE_DIR@")
+set_and_check(@PROJECT_NAME@_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/@INSTALL_LIB_DIR@")
+
+
+
+if(${ear_USE_STATIC_LIBS})
+  find_dependency(yaml-cpp)
+
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/earTargetsStatic.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/earTargetsStatic.cmake")
+  else()
+    message(FATAL_ERROR "Could not find static version of libear.")
+  endif()
+elseif(${ear_USE_SHARED_LIBS})
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/earTargetsShared.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/earTargetsShared.cmake")
+  else()
+    message(FATAL_ERROR "Could not find shared version of libear.")
+  endif()
+else()
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/earTargetsShared.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/earTargetsShared.cmake")
+  else()
+    include("${CMAKE_CURRENT_LIST_DIR}/earTargetsStatic.cmake")
+  endif()
+endif()
+
+check_required_components(ear)
+
+get_target_property(ear_LOCATION_ONLY_FOR_DISPLAY ear LOCATION)
+message(STATUS "Found ear library ${ear_VERSION}: ${ear_LOCATION_ONLY_FOR_DISPLAY}")

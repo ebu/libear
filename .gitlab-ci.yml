@@ -1,0 +1,310 @@
+.brew_install_template: &install_osx_dependencies |
+  brew install yaml-cpp
+
+.windows_dep_install: &install_win_dependencies |
+  vcpkg install yaml-cpp:$WINDOWS_ARCH-windows
+
+.build_template: &build_script |
+  mkdir build
+  mkdir ci-artifacts
+  cd build
+  cmake -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=../ci-artifacts \
+    -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+    -DEAR_UNIT_TESTS=$EAR_UNIT_TESTS \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
+  cmake --build .
+  if [ "$EAR_UNIT_TESTS" = "ON" ]; then CTEST_OUTPUT_ON_FAILURE=TRUE cmake --build . --target test; fi
+  cmake --build . --target install --config $CMAKE_BUILD_TYPE
+
+.build_template_win: &build_script_windows |
+  mkdir build
+  mkdir ci-artifacts
+  cd build
+  cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && cmake .. \
+    -G Ninja \
+    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE \
+    -DCMAKE_INSTALL_PREFIX=../ci-artifacts \
+    -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+    -DEAR_UNIT_TESTS=$EAR_UNIT_TESTS \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+    -DBOOST_ROOT=$BOOST_DIR .."
+  cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && cmake --build ."
+  if [ "$EAR_UNIT_TESTS" = "ON" ]; then cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && set CTEST_OUTPUT_ON_FAILURE=1 && cmake --build . --target test --config $CMAKE_BUILD_TYPE"; fi
+  cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && cmake --build . --target install --config $CMAKE_BUILD_TYPE"
+
+variables:
+  BUILD_SHARED_LIBS: 'OFF'
+  EAR_UNIT_TESTS: 'ON'
+  CMAKE_BUILD_TYPE: 'Release'
+  DOCKER_REGISTRY: 'gitlab.irt.de:3443/ear-production-suite/libear-docker-images'
+  GIT_SUBMODULE_STRATEGY: "normal"
+  WINDOWS_ARCH: 'x64'
+
+stages:
+  - build
+  - package
+
+debian:static:
+  stage: build
+  image: $DOCKER_REGISTRY:debian
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+debian:shared:
+  stage: build
+  image: $DOCKER_REGISTRY:debian
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+ubuntu:static:
+  stage: build
+  image: $DOCKER_REGISTRY:ubuntu
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+ubuntu:shared:
+  stage: build
+  image: $DOCKER_REGISTRY:ubuntu
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+fedora:static:
+  stage: build
+  image: $DOCKER_REGISTRY:fedora
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+fedora:shared:
+  stage: build
+  image: $DOCKER_REGISTRY:fedora
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+  tags:
+    - docker
+  script:
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+coverage:
+  stage: build
+  image: $DOCKER_REGISTRY:ubuntu
+  variables:
+    CMAKE_BUILD_TYPE: 'Coverage'
+  tags:
+    - docker
+  script:
+    - *build_script
+    - gcovr -e '.*submodules.*' -e '.*examples.*' .
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+
+macos:shared:
+  stage: build
+  tags:
+    - macos
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+  script:
+    - *install_osx_dependencies
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+macos:static:
+  stage: build
+  tags:
+    - macos
+  script:
+    - *install_osx_dependencies
+    - *build_script
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+win32:shared:
+  before_script:
+    - rm -rf $(cygpath $VCPKG_ROOT)/installed || true
+    - mv vcpkg-installed $(cygpath $VCPKG_ROOT)/installed || true
+  after_script:
+    - mv $(cygpath $VCPKG_ROOT)/installed vcpkg-installed || true
+  stage: build
+  tags:
+    - windows10
+    - virtualbox
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+    WINDOWS_ARCH: 'x86'
+  script:
+    - *install_win_dependencies
+    - *build_script_windows
+  cache:
+    key: "vcpkg-$WINDOWS_ARCH"
+    paths:
+      - vcpkg-installed
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+
+win32:static:
+  before_script:
+    - rm -rf $(cygpath $VCPKG_ROOT)/installed || true
+    - mv vcpkg-installed $(cygpath $VCPKG_ROOT)/installed || true
+  after_script:
+    - mv $(cygpath $VCPKG_ROOT)/installed vcpkg-installed || true
+  stage: build
+  tags:
+    - windows10
+    - virtualbox
+  variables:
+    WINDOWS_ARCH: 'x86'
+  script:
+    - *install_win_dependencies
+    - *build_script_windows
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+  cache:
+    key: "vcpkg-$WINDOWS_ARCH"
+    paths:
+      - vcpkg-installed
+
+win64:shared:
+  before_script:
+    - rm -rf $(cygpath $VCPKG_ROOT)/installed || true
+    - mv vcpkg-installed $(cygpath $VCPKG_ROOT)/installed || true
+  after_script:
+    - mv $(cygpath $VCPKG_ROOT)/installed vcpkg-installed || true
+  stage: build
+  tags:
+    - windows10
+    - virtualbox
+  variables:
+    BUILD_SHARED_LIBS: 'ON'
+    EAR_UNIT_TESTS: 'OFF'
+  script:
+    - *install_win_dependencies
+    - *build_script_windows
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+  cache:
+    key: "vcpkg-$WINDOWS_ARCH"
+    paths:
+      - vcpkg-installed
+
+win64:static:
+  before_script:
+    - rm -rf $(cygpath $VCPKG_ROOT)/installed || true
+    - mv vcpkg-installed $(cygpath $VCPKG_ROOT)/installed || true
+  after_script:
+    - mv $(cygpath $VCPKG_ROOT)/installed vcpkg-installed || true
+  stage: build
+  tags:
+    - windows10
+    - virtualbox
+  script:
+    - *install_win_dependencies
+    - *build_script_windows
+  artifacts:
+    paths:
+      - build/*
+      - ci-artifacts
+    expire_in: 2h
+  cache:
+    key: "vcpkg-$WINDOWS_ARCH"
+    paths:
+      - vcpkg-installed
+
+.package-base:
+  stage: package
+  script:
+    - echo "no-op, just collecting things for packaging ..."
+  artifacts:
+    paths:
+      - ci-artifacts/*
+    expire_in: 20d
+  only:
+    - tags
+    - master
+
+macos:package-static:
+  extends: .package-base
+  tags:
+    - macos
+  dependencies:
+    - macos:static
+
+win32:package-static:
+  extends: .package-base
+  tags:
+    - windows10
+    - virtualbox
+  dependencies:
+    - win32:static
+
+win64:package-static:
+  extends: .package-base
+  tags:
+    - windows10
+    - virtualbox
+  dependencies:
+    - win64:static

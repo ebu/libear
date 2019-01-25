@@ -1,0 +1,7 @@
+build*
+*.swp
+.clang_complete
+.DS_Store
+.vscode
+docs/.build
+docs/venv
