@@ -5,7 +5,7 @@ include(CMakeFindDependencyMacro)
 set_and_check(@PROJECT_NAME@_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@INSTALL_INCLUDE_DIR@")
 set_and_check(@PROJECT_NAME@_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/@INSTALL_LIB_DIR@")
 
-
+find_dependency(Boost 1.57)
 
 if(${ear_USE_STATIC_LIBS})
   find_dependency(yaml-cpp)

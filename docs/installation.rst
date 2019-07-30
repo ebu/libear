@@ -44,7 +44,6 @@ program which uses the libear.
    cmake_minimum_required(VERSION 3.5)
    project(libear_example VERSION 1.0.0 LANGUAGES CXX)
 
-   find_package(Boost 1.57 REQUIRED)
    find_package(ear REQUIRED)
 
    add_executable(example example.cpp)
