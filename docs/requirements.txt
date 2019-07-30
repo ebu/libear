@@ -1,3 +1,4 @@
+Sphinx ~= 2.1
 exhale ~= 0.2
 sphinx_rtd_theme
 m2r
