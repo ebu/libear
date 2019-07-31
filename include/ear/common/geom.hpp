@@ -25,7 +25,15 @@ namespace ear {
    * @returns y shifted such that it represents the same angle but is greater
    *  than x.
    */
-  double relativeAngle(double x, double y);
+  inline double relativeAngle(double x, double y) {
+    while (y - 360.0 >= x) {
+      y -= 360.0;
+    }
+    while (y < x) {
+      y += 360.0;
+    }
+    return y;
+  }
 
   /** @brief Assuming end is clockwise from start, is the angle x inside
    * [start,end] within some tolerance?
