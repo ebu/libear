@@ -44,7 +44,7 @@ namespace ear {
     }
     virtual size_t size() override { return vec.size(); }
     virtual void write(size_t i, double x) override { vec[i] = (T)x; }
-    virtual void zero() { std::fill(vec.begin(), vec.end(), (T)0.0); }
+    virtual void zero() override { std::fill(vec.begin(), vec.end(), (T)0.0); }
   };
 
   // polymorphic interface for writing a matrix of gains
