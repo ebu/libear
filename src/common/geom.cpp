@@ -4,16 +4,6 @@
 
 namespace ear {
 
-  double relativeAngle(double x, double y) {
-    while (y - 360.0 >= x) {
-      y -= 360.0;
-    }
-    while (y < x) {
-      y += 360.0;
-    }
-    return y;
-  }
-
   bool insideAngleRange(double x, double start, double end, double tol) {
     // end is clockwise from start; if end is start + 360, this rotation is
     // preserved; this makes sure that a range of (-180, 180) or (0, 360)
