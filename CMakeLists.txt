@@ -31,6 +31,7 @@ SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --cov
 # user config options
 ############################################################
 include(FeatureSummary)
+option(BUILD_SHARED_LIBS "Build shared libraries rather than static" FALSE)
 option(EAR_HIDE_INTERNAL_SYMBOLS "Hide symbols by default" TRUE)
 option(EAR_UNIT_TESTS "Build units tests" $<AND:${IS_ROOT_PROJECT},$<NOT:${BUILD_SHARED_LIBS}>>)
 option(EAR_EXAMPLES "Build examples" ${IS_ROOT_PROJECT})
@@ -83,6 +84,7 @@ endif()
 ############################################################
 # FeatureSummary
 ############################################################
+add_feature_info(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS} "Build shared libraries rather than static")
 add_feature_info(EAR_HIDE_INTERNAL_SYMBOLS ${EAR_HIDE_INTERNAL_SYMBOLS} "Hide symbols by default")
 add_feature_info(EAR_UNIT_TESTS ${EAR_UNIT_TESTS} "Build units tests")
 add_feature_info(EAR_EXAMPLES ${EAR_EXAMPLES} "Build examples")
