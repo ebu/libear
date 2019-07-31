@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
+#include "ear/export.h"
 #include "ear/fft.hpp"
 #include "ear/helpers/assert.hpp"
 #include "kissfft/kissfft.hh"
@@ -112,7 +113,7 @@ namespace ear {
     return fft;
   }
 
-  template FFTImpl<float> &get_fft_kiss<float>();
-  template FFTImpl<double> &get_fft_kiss<double>();
+  template FFTImpl<float> EAR_EXPORT &get_fft_kiss<float>();
+  template FFTImpl<double> EAR_EXPORT &get_fft_kiss<double>();
 
 }  // namespace ear

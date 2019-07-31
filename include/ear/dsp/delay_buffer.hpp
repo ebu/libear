@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "ear/exceptions.hpp"
+#include "ear/export.h"
 
 namespace ear {
   namespace dsp {
@@ -8,7 +9,7 @@ namespace ear {
     class DelayBufferImpl;
 
     /// A multi-channel delay buffer
-    class DelayBuffer {
+    class EAR_EXPORT DelayBuffer {
      public:
       /// @param nchannels number of input and output channels
       /// @param nsamples length of the delay

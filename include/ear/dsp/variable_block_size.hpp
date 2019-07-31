@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include "ear/export.h"
 
 namespace ear {
   namespace dsp {
@@ -13,7 +14,7 @@ namespace ear {
     /// always necessary, and because this introduces some delay; if we adapt
     /// multiple components with this then we can save some delay compared to
     /// having it built into each component.
-    class VariableBlockSizeAdapter {
+    class EAR_EXPORT VariableBlockSizeAdapter {
      public:
       using ProcessFunc = void(const float* const* in, float* const* out);
 
