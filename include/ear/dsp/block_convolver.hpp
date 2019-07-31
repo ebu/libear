@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include "ear/export.h"
 #include "ear/fft.hpp"
 
 namespace ear {
@@ -24,7 +25,7 @@ namespace ear {
       /** Static data required to perform convolution of a particular block
        * size; may be shared between any number of BlockConvolver and Filter
        * instances. */
-      class Context {
+      class EAR_EXPORT Context {
        public:
         /** Create a Context with a given block size.
          * @param block_size Block size in samples.
@@ -42,7 +43,7 @@ namespace ear {
        * instances.
        *
        * This stores the pre-transformed filter blocks. */
-      class Filter {
+      class EAR_EXPORT Filter {
        public:
         Filter(const Context &ctx, size_t n, const real_t *filter);
 
@@ -57,7 +58,7 @@ namespace ear {
       /** BlockConvolver implements partitioned overlap-add convolution with a
        * fixed block size, with efficient fading between filters.
        */
-      class BlockConvolver {
+      class EAR_EXPORT BlockConvolver {
        public:
         /** Create a BlockConvolver given the block size and number of blocks.
          * @param ctx Context required for transformations.
