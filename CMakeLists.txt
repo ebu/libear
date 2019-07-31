@@ -33,7 +33,7 @@ SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --cov
 include(FeatureSummary)
 option(BUILD_SHARED_LIBS "Build shared libraries rather than static" FALSE)
 option(EAR_HIDE_INTERNAL_SYMBOLS "Hide symbols by default" TRUE)
-option(EAR_UNIT_TESTS "Build units tests" $<AND:${IS_ROOT_PROJECT},$<NOT:${BUILD_SHARED_LIBS}>>)
+option(EAR_UNIT_TESTS "Build units tests" ${IS_ROOT_PROJECT})
 option(EAR_EXAMPLES "Build examples" ${IS_ROOT_PROJECT})
 option(EAR_PACKAGE_AND_INSTALL "Package and install libear" ${IS_ROOT_PROJECT})
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
@@ -45,11 +45,10 @@ else()
   set(INSTALL_CMAKE_DIR share/cmake/ear CACHE PATH "Installation directory for CMake files")
 endif()
 
-if(${BUILD_SHARED_LIBS} AND ${EAR_UNIT_TESTS} AND ${EAR_HIDE_INTERNAL_SYMBOLS})
-  message(FATAL_ERROR "\
-    Unit tests need access to internal functions which are not exported by \
-    default for a shared library. Consider disabling EAR_HIDE_INTERNAL_SYMBOLS \
-    to run the unit tests with the shared library of libear.")
+if((NOT BUILD_SHARED_LIBS) OR (NOT EAR_HIDE_INTERNAL_SYMBOLS))
+    SET(EAR_INTERNAL_TESTS TRUE)
+else()
+    SET(EAR_INTERNAL_TESTS FALSE)
 endif()
 
 ############################################################
@@ -77,8 +76,8 @@ if(EAR_EXAMPLES)
 endif()
 
 if(EAR_UNIT_TESTS)
-  include(CTest)
-  add_subdirectory(tests)
+    include(CTest)
+    add_subdirectory(tests)
 endif()
 
 ############################################################
@@ -87,6 +86,8 @@ endif()
 add_feature_info(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS} "Build shared libraries rather than static")
 add_feature_info(EAR_HIDE_INTERNAL_SYMBOLS ${EAR_HIDE_INTERNAL_SYMBOLS} "Hide symbols by default")
 add_feature_info(EAR_UNIT_TESTS ${EAR_UNIT_TESTS} "Build units tests")
+add_feature_info("Internal Tests" ${EAR_INTERNAL_TESTS}
+    "Build internal tests; requires BUILD_SHARED_LIBS or EAR_HIDE_INTERNAL_SYMBOLS to be FALSE")
 add_feature_info(EAR_EXAMPLES ${EAR_EXAMPLES} "Build examples")
 add_feature_info(EAR_PACKAGE_AND_INSTALL ${EAR_PACKAGE_AND_INSTALL} "Package and install libear")
 feature_summary(WHAT ALL)
