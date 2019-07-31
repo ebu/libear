@@ -11,10 +11,9 @@
   cmake -G Ninja \
     -DCMAKE_INSTALL_PREFIX=../ci-artifacts \
     -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
-    -DEAR_UNIT_TESTS=$EAR_UNIT_TESTS \
     -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
   cmake --build .
-  if [ "$EAR_UNIT_TESTS" = "ON" ]; then CTEST_OUTPUT_ON_FAILURE=TRUE cmake --build . --target test; fi
+  CTEST_OUTPUT_ON_FAILURE=TRUE cmake --build . --target test
   cmake --build . --target install --config $CMAKE_BUILD_TYPE
 
 .build_template_win: &build_script_windows |
@@ -26,16 +25,14 @@
     -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE \
     -DCMAKE_INSTALL_PREFIX=../ci-artifacts \
     -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
-    -DEAR_UNIT_TESTS=$EAR_UNIT_TESTS \
     -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
     -DBOOST_ROOT=$BOOST_DIR .."
   cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && cmake --build ."
-  if [ "$EAR_UNIT_TESTS" = "ON" ]; then cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && set CTEST_OUTPUT_ON_FAILURE=1 && cmake --build . --target test --config $CMAKE_BUILD_TYPE"; fi
+  cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && set CTEST_OUTPUT_ON_FAILURE=1 && cmake --build . --target test --config $CMAKE_BUILD_TYPE"
   cmd.exe /C "vcvarsall.bat $WINDOWS_ARCH && cmake --build . --target install --config $CMAKE_BUILD_TYPE"
 
 variables:
   BUILD_SHARED_LIBS: 'OFF'
-  EAR_UNIT_TESTS: 'ON'
   CMAKE_BUILD_TYPE: 'Release'
   DOCKER_REGISTRY: 'gitlab.irt.de:3443/ear-production-suite/libear-docker-images'
   GIT_SUBMODULE_STRATEGY: "normal"
@@ -63,7 +60,6 @@ debian:shared:
   image: $DOCKER_REGISTRY:debian
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
   tags:
     - docker
   script:
@@ -92,7 +88,6 @@ ubuntu:shared:
   image: $DOCKER_REGISTRY:ubuntu
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
   tags:
     - docker
   script:
@@ -121,7 +116,6 @@ fedora:shared:
   image: $DOCKER_REGISTRY:fedora
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
   tags:
     - docker
   script:
@@ -150,7 +144,6 @@ macos:shared:
     - macos
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
   script:
     - *install_osx_dependencies
     - *build_script
@@ -185,7 +178,6 @@ win32:shared:
     - virtualbox
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
     WINDOWS_ARCH: 'x86'
   script:
     - *install_win_dependencies
@@ -237,7 +229,6 @@ win64:shared:
     - virtualbox
   variables:
     BUILD_SHARED_LIBS: 'ON'
-    EAR_UNIT_TESTS: 'OFF'
   script:
     - *install_win_dependencies
     - *build_script_windows
