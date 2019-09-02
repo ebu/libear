@@ -54,13 +54,13 @@ install:
   - |
     if [[ "$DOCKER_IMAGE" == *"ubuntu"* || "$DOCKER_IMAGE" == *"debian"* ]]; then
       docker exec -t linux bash -c "apt-get update &&
-      apt-get install -y build-essential cmake ninja-build libboost-dev libyaml-cpp-dev"
+      apt-get install -y build-essential cmake ninja-build libboost-dev"
     fi
   # install dependencies in red hat like systems
   - |
     if [[ "$DOCKER_IMAGE" == *"fedora"* ]]; then
       docker exec -t linux bash -c "dnf -y group install \"Development Tools\" \"C Development Tools and Libraries\" &&
-      dnf -y install cmake ninja-build boost-devel yaml-cpp-devel"
+      dnf -y install cmake ninja-build boost-devel"
     fi
   # install dependencies for coverage
   - |
@@ -80,7 +80,6 @@ script:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      brew install yaml-cpp &&
       mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .. &&
       make -j2 && ctest --output-on-failure
     fi
