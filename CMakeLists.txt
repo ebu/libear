@@ -55,7 +55,6 @@ endif()
 # find libraries
 ############################################################
 find_package(Boost 1.57 REQUIRED)
-find_package(yaml-cpp 0.5.2 CONFIG REQUIRED)
 include(${PROJECT_SOURCE_DIR}/submodules/eigen3.cmake)
 
 ############################################################
