@@ -12,10 +12,6 @@ Dependencies
 
 -  CMake build system (version 3.5 or later)
 
--  yaml-cpp_ (version 0.5.2 or later)
-
-.. _yaml-cpp: https://github.com/jbeder/yaml-cpp
-
 Installation
 ------------
 

@@ -1,7 +1,3 @@
-# 2051_layouts.yaml
-
-Loudspeaker layouts derived from ITU-R BS.2051-1.
-
 # Design_5200_100_random.dat
 
 Approximate spherical t-design for t=100, as in [0].
