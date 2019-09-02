@@ -17,7 +17,6 @@ started.
       - Boost.Optional
       - Boost.Variant
   - CMake build system (version 3.5 or later)
-  - [yaml-cpp](https://github.com/jbeder/yaml-cpp) (version 0.5.2 or later)
 
 ### Installation
 
