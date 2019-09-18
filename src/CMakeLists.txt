@@ -118,26 +118,7 @@ if(EAR_PACKAGE_AND_INSTALL)
     SOVERSION "${PROJECT_VERSION_MAJOR}"
   )
 
-  install(FILES
-    ${PROJECT_SOURCE_DIR}/include/ear/bs2051.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/common_types.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/decorrelate.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/block_convolver.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/block_convolver_impl.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/delay_buffer.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/dsp.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/gain_interpolator.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/ptr_adapter.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/dsp/variable_block_size.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/ear.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/exceptions.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/fft.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/gain_calculators.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/helpers/assert.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/layout.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/metadata.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/screen.hpp
-    ${PROJECT_SOURCE_DIR}/include/ear/warnings.hpp
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ear/
     DESTINATION ${INSTALL_INCLUDE_DIR}/ear
   )
   install(FILES ${PROJECT_BINARY_DIR}/ear/version.hpp
