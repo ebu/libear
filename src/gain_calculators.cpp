@@ -1,6 +1,6 @@
 #include "ear/gain_calculators.hpp"
 
-#include "ear/common/helpers/make_unique.hpp"
+#include <boost/make_unique.hpp>
 #include "ear/direct_speakers/gain_calculator_direct_speakers.hpp"
 #include "ear/hoa/gain_calculator_hoa.hpp"
 #include "ear/object_based/gain_calculator_objects.hpp"
@@ -14,7 +14,7 @@ namespace ear {
   GainCalculatorDirectSpeakers::GainCalculatorDirectSpeakers(
       const Layout& layout,
       std::map<std::string, std::string> additionalSubstitutions)
-      : _impl(std::make_unique<GainCalculatorDirectSpeakersImpl>(
+      : _impl(boost::make_unique<GainCalculatorDirectSpeakersImpl>(
             layout, additionalSubstitutions)){};
 
   template <typename T>
@@ -35,7 +35,7 @@ namespace ear {
   GainCalculatorObjects::~GainCalculatorObjects() = default;
 
   GainCalculatorObjects::GainCalculatorObjects(const Layout& layout)
-      : _impl(std::make_unique<GainCalculatorObjectsImpl>(layout)){};
+      : _impl(boost::make_unique<GainCalculatorObjectsImpl>(layout)){};
 
   template <typename T>
   void GainCalculatorObjects::calculate(const ObjectsTypeMetadata& metadata,
@@ -57,7 +57,7 @@ namespace ear {
   GainCalculatorHOA::~GainCalculatorHOA() = default;
 
   GainCalculatorHOA::GainCalculatorHOA(const Layout& layout)
-      : _impl(std::make_unique<GainCalculatorHOAImpl>(layout)){};
+      : _impl(boost::make_unique<GainCalculatorHOAImpl>(layout)){};
 
   template <typename T>
   void GainCalculatorHOA::calculate(const HOATypeMetadata& metadata,

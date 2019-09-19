@@ -1,3 +1,4 @@
+#include <boost/make_unique.hpp>
 #include <cassert>
 #include <catch2/catch.hpp>
 #include <cmath>
@@ -5,7 +6,6 @@
 #include <string>
 #include <vector>
 #include "ear/bs2051.hpp"
-#include "ear/common/helpers/make_unique.hpp"
 #include "ear/ear.hpp"
 #include "ear/metadata.hpp"
 
@@ -39,7 +39,7 @@ class GainCalculatorObjectsTester {
  public:
   GainCalculatorObjectsTester(Layout layout)
       : _layout(layout),
-        _gainCalc(std::make_unique<GainCalculatorObjects>(layout)){};
+        _gainCalc(boost::make_unique<GainCalculatorObjects>(layout)){};
 
   GainsMaps run(const ObjectsTypeMetadata& metadata) {
     Gains directGains(_layout.channels().size(), 0.0);

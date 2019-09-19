@@ -1,5 +1,5 @@
 #include "ear/dsp/block_convolver.hpp"
-#include "ear/common/helpers/make_unique.hpp"
+#include <boost/make_unique.hpp>
 #include "ear/dsp/block_convolver_impl.hpp"
 
 namespace ear {
@@ -16,12 +16,12 @@ namespace ear {
       size_t Filter::num_blocks() const { return impl->num_blocks(); }
 
       BlockConvolver::BlockConvolver(const Context &ctx, size_t num_blocks)
-          : impl(std::make_unique<block_convolver_impl::BlockConvolver>(
+          : impl(boost::make_unique<block_convolver_impl::BlockConvolver>(
                 ctx.impl, num_blocks)) {}
 
       BlockConvolver::BlockConvolver(const Context &ctx, const Filter &filter,
                                      size_t num_blocks)
-          : impl(std::make_unique<block_convolver_impl::BlockConvolver>(
+          : impl(boost::make_unique<block_convolver_impl::BlockConvolver>(
                 ctx.impl, filter.impl, num_blocks)) {}
 
       void BlockConvolver::crossfade_filter(const Filter &filter) {

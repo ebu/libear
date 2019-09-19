@@ -1,6 +1,6 @@
 #include <Eigen/Core>
+#include <boost/make_unique.hpp>
 #include <functional>
-#include "ear/common/helpers/make_unique.hpp"
 #include "ear/dsp/ptr_adapter.hpp"
 #include "ear/dsp/variable_block_size.hpp"
 #include "ear/helpers/assert.hpp"
@@ -100,7 +100,7 @@ namespace ear {
     VariableBlockSizeAdapter::VariableBlockSizeAdapter(
         size_t block_size, size_t num_channels_in, size_t num_channels_out,
         std::function<ProcessFunc> process_func)
-        : impl(std::make_unique<VariableBlockSizeAdapterImpl>(
+        : impl(boost::make_unique<VariableBlockSizeAdapterImpl>(
               block_size, num_channels_in, num_channels_out, process_func)) {}
 
     void VariableBlockSizeAdapter::process(size_t nsamples,

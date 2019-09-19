@@ -1,5 +1,5 @@
 #include <Eigen/Core>
-#include "ear/common/helpers/make_unique.hpp"
+#include <boost/make_unique.hpp>
 #include "ear/dsp/delay_buffer.hpp"
 #include "ear/exceptions.hpp"
 
@@ -46,7 +46,7 @@ namespace ear {
     };
 
     DelayBuffer::DelayBuffer(size_t nchannels, size_t nsamples)
-        : impl(std::make_unique<DelayBufferImpl>(nchannels, nsamples)) {}
+        : impl(boost::make_unique<DelayBufferImpl>(nchannels, nsamples)) {}
 
     void DelayBuffer::process(size_t nsamples, const float *const *input,
                               float *const *output) {

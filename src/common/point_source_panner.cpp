@@ -2,11 +2,11 @@
 
 #include <Eigen/Dense>
 #include <boost/algorithm/clamp.hpp>
+#include <boost/make_unique.hpp>
 #include "ear/bs2051.hpp"
 #include "ear/common/facets.hpp"
 #include "ear/common/geom.hpp"
 #include "ear/common/helpers/eigen_helpers.hpp"
-#include "ear/common/helpers/make_unique.hpp"
 #include "ear/helpers/assert.hpp"
 
 namespace ear {
@@ -77,7 +77,7 @@ namespace ear {
       Eigen::Vector3i tripletChannels;
       tripletChannels << order(i), order(j), n;
       _regions.push_back(
-          std::make_unique<Triplet>(tripletChannels, tripletPositions));
+          boost::make_unique<Triplet>(tripletChannels, tripletPositions));
     }
   }
 
@@ -412,7 +412,7 @@ namespace ear {
     Eigen::Vector2i outputChannels{leftChannelIndex, rightChannelIndex};
 
     auto panner =
-        std::make_unique<StereoPannerDownmix>(outputChannels, positions);
+        boost::make_unique<StereoPannerDownmix>(outputChannels, positions);
 
     std::vector<std::unique_ptr<RegionHandler>> regions;
     regions.push_back(std::move(panner));
@@ -494,7 +494,7 @@ namespace ear {
       centreDownmix.fill(1.0 /
                          std::sqrt(static_cast<double>(outputChannels.size())));
 
-      regions.push_back(std::make_unique<VirtualNgon>(
+      regions.push_back(boost::make_unique<VirtualNgon>(
           outputChannels, positions, centrePosition, centreDownmix));
     }
     // Facets not adjacent to virtual speakers are turned into triplets or
@@ -515,7 +515,8 @@ namespace ear {
           positions.row(rowIndex) = positionsReal[vert];
           ++rowIndex;
         }
-        regions.push_back(std::make_unique<Triplet>(outputChannels, positions));
+        regions.push_back(
+            boost::make_unique<Triplet>(outputChannels, positions));
       } else if (facetVerts.size() == 4) {
         std::vector<int> facetVertsVec(facetVerts.begin(), facetVerts.end());
         Eigen::Vector4i outputChannels(facetVertsVec.data());
@@ -526,7 +527,7 @@ namespace ear {
           ++rowIndex;
         }
         regions.push_back(
-            std::make_unique<QuadRegion>(outputChannels, positions));
+            boost::make_unique<QuadRegion>(outputChannels, positions));
       } else {
         throw internal_error(
             "facets with more than 4 vertices are not supported");

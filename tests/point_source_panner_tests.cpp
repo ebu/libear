@@ -1,12 +1,12 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+#include <boost/make_unique.hpp>
 #include <boost/optional/optional_io.hpp>
 #include <catch2/catch.hpp>
 #include <random>
 #include <string>
 #include "ear/bs2051.hpp"
 #include "ear/common/geom.hpp"
-#include "ear/common/helpers/make_unique.hpp"
 #include "ear/common/point_source_panner.hpp"
 #include "ear/exceptions.hpp"
 #include "helper/compare.hpp"
@@ -281,7 +281,7 @@ TEST_CASE("test_polar_point_source_panner") {
   std::vector<Eigen::Vector3i> outputChannelsVec = {{0, 1, 3}, {2, 1, 3}};
   std::vector<std::unique_ptr<RegionHandler>> regions_1;
   for (const auto& outputChannels : outputChannelsVec) {
-    regions_1.push_back(std::make_unique<Triplet>(
+    regions_1.push_back(boost::make_unique<Triplet>(
         outputChannels, positions(outputChannels, {0, 1, 2})));
   }
 
@@ -291,7 +291,7 @@ TEST_CASE("test_polar_point_source_panner") {
 
   std::vector<std::unique_ptr<RegionHandler>> regions_2;
   for (const auto& outputChannels : outputChannelsVec) {
-    regions_2.push_back(std::make_unique<Triplet>(
+    regions_2.push_back(boost::make_unique<Triplet>(
         outputChannels, positions(outputChannels, {0, 1, 2})));
   }
   PolarPointSourcePanner psp(std::move(regions_2));

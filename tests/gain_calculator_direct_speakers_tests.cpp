@@ -1,11 +1,11 @@
 #include <Eigen/Core>
+#include <boost/make_unique.hpp>
 #include <catch2/catch.hpp>
 #include <map>
 #include <string>
 #include <vector>
 #include "ear/bs2051.hpp"
 #include "ear/common/geom.hpp"
-#include "ear/common/helpers/make_unique.hpp"
 #include "ear/ear.hpp"
 #include "ear/metadata.hpp"
 #include "helper/vector_approx.hpp"
