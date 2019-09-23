@@ -1,6 +1,6 @@
 #pragma once
 #include "ear/export.h"
-#include "ear/layout.hpp"
+#include "layout.hpp"
 
 namespace ear {
 

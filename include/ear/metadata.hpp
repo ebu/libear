@@ -2,9 +2,9 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 #include <string>
-#include "ear/common_types.hpp"
+#include "common_types.hpp"
 #include "ear/export.h"
-#include "ear/screen.hpp"
+#include "screen.hpp"
 
 namespace ear {
 

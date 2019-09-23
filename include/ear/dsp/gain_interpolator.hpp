@@ -3,7 +3,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include "ear/helpers/assert.hpp"
+#include "../helpers/assert.hpp"
 
 namespace ear {
   namespace dsp {

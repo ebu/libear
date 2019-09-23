@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "ear/exceptions.hpp"
+#include "../exceptions.hpp"
 #include "ear/export.h"
 
 namespace ear {

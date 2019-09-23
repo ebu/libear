@@ -1,5 +1,5 @@
 #pragma once
-#include "ear/bs2051.hpp"
-#include "ear/decorrelate.hpp"
-#include "ear/exceptions.hpp"
-#include "ear/gain_calculators.hpp"
+#include "bs2051.hpp"
+#include "decorrelate.hpp"
+#include "exceptions.hpp"
+#include "gain_calculators.hpp"

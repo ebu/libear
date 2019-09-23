@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 #include "ear/export.h"
-#include "ear/layout.hpp"
-#include "ear/metadata.hpp"
-#include "ear/warnings.hpp"
+#include "layout.hpp"
+#include "metadata.hpp"
+#include "warnings.hpp"
 
 namespace ear {
 

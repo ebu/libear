@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <vector>
-#include "ear/exceptions.hpp"
+#include "../exceptions.hpp"
 
 namespace ear {
   // polymorphic interface for writing a vector of gains

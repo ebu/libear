@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "ear/export.h"
-#include "ear/layout.hpp"
+#include "layout.hpp"
 
 namespace ear {
   /** @brief Design one filter for each channel in layout.

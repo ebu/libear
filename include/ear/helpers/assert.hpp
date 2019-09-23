@@ -1,5 +1,5 @@
 #pragma once
-#include "ear/exceptions.hpp"
+#include "../exceptions.hpp"
 
 namespace ear {
   // implementation for _assert_impl. This is wrapped in a macro so that we can
