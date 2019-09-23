@@ -3,8 +3,8 @@
 #include <map>
 #include <memory>
 #include <regex>
-#include "ear/common/point_source_panner.hpp"
-#include "ear/common/screen_edge_lock.hpp"
+#include "../common/point_source_panner.hpp"
+#include "../common/screen_edge_lock.hpp"
 #include "ear/helpers/output_gains.hpp"
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"

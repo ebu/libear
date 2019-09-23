@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 #include <random>
 #include <vector>
-#include "ear/common/geom.hpp"
+#include "common/geom.hpp"
 #include "ear/common_types.hpp"
 
 using namespace ear;

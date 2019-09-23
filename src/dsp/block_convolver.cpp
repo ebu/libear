@@ -1,6 +1,6 @@
 #include "ear/dsp/block_convolver.hpp"
 #include <boost/make_unique.hpp>
-#include "ear/dsp/block_convolver_impl.hpp"
+#include "block_convolver_impl.hpp"
 
 namespace ear {
   namespace dsp {

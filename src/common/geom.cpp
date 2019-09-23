@@ -1,4 +1,4 @@
-#include "ear/common/geom.hpp"
+#include "geom.hpp"
 
 #include <cmath>
 

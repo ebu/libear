@@ -3,10 +3,10 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+#include "common/geom.hpp"
+#include "common/helpers/eigen_helpers.hpp"
 #include "ear/bs2051.hpp"
-#include "ear/common/geom.hpp"
-#include "ear/common/helpers/eigen_helpers.hpp"
-#include "ear/object_based/extent.hpp"
+#include "object_based/extent.hpp"
 
 using namespace ear;
 

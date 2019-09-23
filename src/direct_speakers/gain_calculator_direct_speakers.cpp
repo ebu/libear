@@ -1,16 +1,16 @@
-#include "ear/direct_speakers/gain_calculator_direct_speakers.hpp"
+#include "gain_calculator_direct_speakers.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
-#include "ear/common/geom.hpp"
-#include "ear/common/helpers/eigen_helpers.hpp"
-#include "ear/common/point_source_panner.hpp"
-#include "ear/common/screen_edge_lock.hpp"
-#include "ear/direct_speakers/mapping_rules.hpp"
+#include "../common/geom.hpp"
+#include "../common/helpers/eigen_helpers.hpp"
+#include "../common/point_source_panner.hpp"
+#include "../common/screen_edge_lock.hpp"
 #include "ear/helpers/assert.hpp"
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"
+#include "mapping_rules.hpp"
 
 namespace ear {
 

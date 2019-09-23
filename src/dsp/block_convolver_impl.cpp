@@ -1,4 +1,4 @@
-#include "ear/dsp/block_convolver_impl.hpp"
+#include "block_convolver_impl.hpp"
 #include <algorithm>
 #include <vector>
 #include "ear/fft.hpp"

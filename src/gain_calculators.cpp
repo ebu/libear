@@ -1,9 +1,9 @@
 #include "ear/gain_calculators.hpp"
 
 #include <boost/make_unique.hpp>
-#include "ear/direct_speakers/gain_calculator_direct_speakers.hpp"
-#include "ear/hoa/gain_calculator_hoa.hpp"
-#include "ear/object_based/gain_calculator_objects.hpp"
+#include "direct_speakers/gain_calculator_direct_speakers.hpp"
+#include "hoa/gain_calculator_hoa.hpp"
+#include "object_based/gain_calculator_objects.hpp"
 
 namespace ear {
 

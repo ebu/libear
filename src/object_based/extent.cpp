@@ -1,12 +1,12 @@
-#include "ear/object_based/extent.hpp"
+#include "extent.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/clamp.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <cmath>
 #include <utility>
-#include "ear/common/geom.hpp"
-#include "ear/common/helpers/eigen_helpers.hpp"
+#include "../common/geom.hpp"
+#include "../common/helpers/eigen_helpers.hpp"
 
 const double PI = boost::math::constants::pi<double>();
 

@@ -1,6 +1,6 @@
 #include "ear/layout.hpp"
 
-#include "ear/common/geom.hpp"
+#include "common/geom.hpp"
 
 namespace ear {
 

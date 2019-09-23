@@ -1,8 +1,8 @@
-#include "ear/hoa/gain_calculator_hoa.hpp"
+#include "gain_calculator_hoa.hpp"
 #include <map>
-#include "ear/common/helpers/eigen_helpers.hpp"
-#include "ear/common/point_source_panner.hpp"
-#include "ear/hoa/hoa.hpp"
+#include "../common/helpers/eigen_helpers.hpp"
+#include "../common/point_source_panner.hpp"
+#include "hoa.hpp"
 
 namespace ear {
   GainCalculatorHOAImpl::GainCalculatorHOAImpl(const Layout &layout) {

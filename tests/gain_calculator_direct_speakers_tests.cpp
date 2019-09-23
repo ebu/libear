@@ -4,8 +4,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "common/geom.hpp"
 #include "ear/bs2051.hpp"
-#include "ear/common/geom.hpp"
 #include "ear/ear.hpp"
 #include "ear/metadata.hpp"
 #include "helper/vector_approx.hpp"

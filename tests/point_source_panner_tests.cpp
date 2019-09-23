@@ -5,9 +5,9 @@
 #include <catch2/catch.hpp>
 #include <random>
 #include <string>
+#include "common/geom.hpp"
+#include "common/point_source_panner.hpp"
 #include "ear/bs2051.hpp"
-#include "ear/common/geom.hpp"
-#include "ear/common/point_source_panner.hpp"
 #include "ear/exceptions.hpp"
 #include "helper/compare.hpp"
 

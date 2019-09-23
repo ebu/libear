@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
-#include "ear/hoa/hoa.hpp"
 #include "eigen_utils.hpp"
+#include "hoa/hoa.hpp"
 
 using namespace ear::hoa;
 

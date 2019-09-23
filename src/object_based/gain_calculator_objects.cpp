@@ -1,9 +1,9 @@
-#include "ear/object_based/gain_calculator_objects.hpp"
+#include "gain_calculator_objects.hpp"
 
 #include <cmath>
 #include <functional>
-#include "ear/common/geom.hpp"
-#include "ear/common/helpers/eigen_helpers.hpp"
+#include "../common/geom.hpp"
+#include "../common/helpers/eigen_helpers.hpp"
 #include "ear/exceptions.hpp"
 
 namespace ear {

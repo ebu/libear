@@ -1,13 +1,13 @@
-#include "ear/common/point_source_panner.hpp"
+#include "point_source_panner.hpp"
 
 #include <Eigen/Dense>
 #include <boost/algorithm/clamp.hpp>
 #include <boost/make_unique.hpp>
 #include "ear/bs2051.hpp"
-#include "ear/common/facets.hpp"
-#include "ear/common/geom.hpp"
-#include "ear/common/helpers/eigen_helpers.hpp"
 #include "ear/helpers/assert.hpp"
+#include "facets.hpp"
+#include "geom.hpp"
+#include "helpers/eigen_helpers.hpp"
 
 namespace ear {
 

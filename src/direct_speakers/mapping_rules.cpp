@@ -2,7 +2,7 @@
 //     python tools/create_rules_cpp.py | clang-format -style=file
 // perhaps edit that instead?
 
-#include "ear/direct_speakers/mapping_rules.hpp"
+#include "mapping_rules.hpp"
 #include <cmath>
 
 namespace ear {

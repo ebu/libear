@@ -1,4 +1,4 @@
-#include "ear/common/facets.hpp"
+#include "facets.hpp"
 
 namespace ear {
   const std::vector<Facet> FACETS_0_5_0 = {

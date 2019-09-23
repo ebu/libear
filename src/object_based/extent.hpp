@@ -1,7 +1,7 @@
 #pragma once
 #include <Eigen/Core>
 #include <memory>
-#include "ear/common/point_source_panner.hpp"
+#include "../common/point_source_panner.hpp"
 
 namespace ear {
 

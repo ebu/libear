@@ -1,6 +1,6 @@
 #include <Eigen/Core>
 #include <catch2/catch.hpp>
-#include "ear/common/helpers/eigen_helpers.hpp"
+#include "common/helpers/eigen_helpers.hpp"
 
 using namespace ear;
 

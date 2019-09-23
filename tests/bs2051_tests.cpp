@@ -5,8 +5,8 @@
 #include <numeric>
 #include <string>
 #include <vector>
+#include "common/geom.hpp"
 #include "ear/bs2051.hpp"
-#include "ear/common/geom.hpp"
 #include "helper/compare.hpp"
 
 using namespace ear;

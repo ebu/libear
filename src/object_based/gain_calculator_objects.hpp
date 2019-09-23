@@ -1,16 +1,16 @@
 #pragma once
 #include <memory>
-#include "ear/common/channel_lock.hpp"
-#include "ear/common/point_source_panner.hpp"
-#include "ear/common/screen_edge_lock.hpp"
-#include "ear/common/screen_scale.hpp"
+#include "../common/channel_lock.hpp"
+#include "../common/point_source_panner.hpp"
+#include "../common/screen_edge_lock.hpp"
+#include "../common/screen_scale.hpp"
 #include "ear/common_types.hpp"
 #include "ear/helpers/output_gains.hpp"
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"
-#include "ear/object_based/extent.hpp"
-#include "ear/object_based/zone_exclusion.hpp"
 #include "ear/warnings.hpp"
+#include "extent.hpp"
+#include "zone_exclusion.hpp"
 
 namespace ear {
 

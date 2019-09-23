@@ -11,6 +11,7 @@ function(add_ear_test name)
   )
   target_include_directories(${name} PRIVATE
     ${PROJECT_SOURCE_DIR}/submodules
+    ${PROJECT_SOURCE_DIR}/src
   )
   add_test(
     NAME ${name}
