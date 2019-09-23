@@ -63,7 +63,7 @@ include(${PROJECT_SOURCE_DIR}/submodules/eigen3.cmake)
 ############################################################
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/config/version.hpp.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ear/version.hpp")
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/version.hpp")
 
 ############################################################
 # add targets

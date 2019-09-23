@@ -1,6 +1,6 @@
 #pragma once
 #include <stdexcept>
-#include "ear/export.h"
+#include "export.hpp"
 
 namespace ear {
   /// thrown if features are used which are not yet implemented

@@ -5,8 +5,8 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include "../export.hpp"
 #include "../fft.hpp"
-#include "ear/export.h"
 
 namespace ear {
   namespace dsp {

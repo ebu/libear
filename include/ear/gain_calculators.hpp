@@ -2,7 +2,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "ear/export.h"
+#include "export.hpp"
 #include "layout.hpp"
 #include "metadata.hpp"
 #include "warnings.hpp"

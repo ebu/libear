@@ -88,7 +88,7 @@ set_target_properties(ear PROPERTIES CXX_EXTENSIONS OFF)
 
 include(GenerateExportHeader)
 generate_export_header(ear
-  EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/ear/export.h
+  EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/generated/export.hpp
 )
 
 ############################################################
@@ -121,11 +121,8 @@ if(EAR_PACKAGE_AND_INSTALL)
   install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ear/
     DESTINATION ${INSTALL_INCLUDE_DIR}/ear
   )
-  install(FILES ${PROJECT_BINARY_DIR}/ear/version.hpp
-    DESTINATION ${INSTALL_INCLUDE_DIR}/ear
-  )
-  install(FILES ${PROJECT_BINARY_DIR}/ear/export.h
-    DESTINATION ${INSTALL_INCLUDE_DIR}/ear
+  install(DIRECTORY ${PROJECT_BINARY_DIR}/generated/
+    DESTINATION ${INSTALL_INCLUDE_DIR}/ear/generated
   )
 
   install(FILES

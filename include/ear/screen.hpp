@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/variant.hpp>
 #include "common_types.hpp"
-#include "ear/export.h"
+#include "export.hpp"
 
 namespace ear {
 

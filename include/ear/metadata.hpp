@@ -3,7 +3,7 @@
 #include <boost/variant.hpp>
 #include <string>
 #include "common_types.hpp"
-#include "ear/export.h"
+#include "export.hpp"
 #include "screen.hpp"
 
 namespace ear {

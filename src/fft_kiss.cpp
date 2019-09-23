@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
-#include "ear/export.h"
+#include "ear/export.hpp"
 #include "ear/fft.hpp"
 #include "ear/helpers/assert.hpp"
 #include "kissfft/kissfft.hh"

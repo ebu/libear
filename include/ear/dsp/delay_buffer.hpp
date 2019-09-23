@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "../exceptions.hpp"
-#include "ear/export.h"
+#include "../export.hpp"
 
 namespace ear {
   namespace dsp {

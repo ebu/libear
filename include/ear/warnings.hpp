@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <string>
-#include "ear/export.h"
+#include "export.hpp"
 
 namespace ear {
   /// A warning message, containing a code and a corresponding message. The code
