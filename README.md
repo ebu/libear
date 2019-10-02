@@ -1,5 +1,9 @@
 # libear — Recommendation ITU-R BS.2127 core library
 
+[![Build Status](https://travis-ci.org/ebu/libear.svg?branch=master)](https://travis-ci.org/ebu/libear)
+[![Documentation Status](https://readthedocs.org/projects/libear/badge/?version=latest)](https://libear.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/ebu/libear/branch/master/graph/badge.svg)](https://codecov.io/gh/ebu/libear)
+
 *libear* is a C++11 library to render ADM content according to [Recommendation
 ITU-R BS.2127](https://www.itu.int/rec/R-REC-BS.2127). It is not a complete
 application, but provides components to calculate gains and apply them to
