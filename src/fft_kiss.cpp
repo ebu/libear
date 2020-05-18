@@ -5,7 +5,7 @@
 #include "ear/export.hpp"
 #include "ear/fft.hpp"
 #include "ear/helpers/assert.hpp"
-#include "kissfft/kissfft.hh"
+#include "kissfft.hh"
 
 namespace ear {
 
