@@ -37,10 +37,11 @@ add_library(ear
 )
 
 target_include_directories(ear
+  PRIVATE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/submodules/kissfft>
   PUBLIC
   # Headers used from source/build location:
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/submodules> # submodules
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>  # config.h / export.h
   # Headers used from installed location:
     $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>

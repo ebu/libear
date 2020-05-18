@@ -6,7 +6,7 @@
 #include <complex>
 #include <random>
 #include "ear/layout.hpp"
-#include "kissfft/kissfft.hh"
+#include "kissfft.hh"
 
 const double PI = boost::math::constants::pi<double>();
 
