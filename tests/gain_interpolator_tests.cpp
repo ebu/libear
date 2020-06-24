@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <catch2/catch.hpp>
 #include <vector>
+
 #include "ear/dsp/gain_interpolator.hpp"
 #include "ear/dsp/ptr_adapter.hpp"
 #include "eigen_utils.hpp"
@@ -219,13 +220,13 @@ TEST_CASE("vector") {
 TEST_CASE("matrix") {
   GainInterpolator<LinearInterpMatrix> interp;
 
-  std::vector<std::vector<float>> a{{0.0f, 0.3f}, {0.5f, 0.0f}};
-  std::vector<std::vector<float>> b{{0.6f, 0.0f}, {0.0f, 0.7f}};
+  std::vector<std::vector<float>> a{{0.0f, 0.3f}, {0.5f, 0.0f}, {0.4f, 1.0f}};
+  std::vector<std::vector<float>> b{{0.6f, 0.0f}, {0.0f, 0.7f}, {1.0f, 0.2f}};
 
   interp.interp_points.emplace_back(100, a);
   interp.interp_points.emplace_back(200, b);
 
-  Eigen::MatrixXf input = Eigen::MatrixXf::Random(300, 2);
+  Eigen::MatrixXf input = Eigen::MatrixXf::Random(300, 3);
   Eigen::MatrixXf output = Eigen::MatrixXf::Zero(300, 2);
 
   Eigen::internal::set_is_malloc_allowed(false);
@@ -248,6 +249,8 @@ TEST_CASE("matrix") {
   run_channel(0, 1);
   run_channel(1, 0);
   run_channel(1, 1);
+  run_channel(2, 0);
+  run_channel(2, 1);
 
   CHECK_THAT(output, IsApprox(expected_output));
 }
