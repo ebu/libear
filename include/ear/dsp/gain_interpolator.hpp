@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
 #include "../helpers/assert.hpp"
 
 namespace ear {
@@ -253,7 +254,7 @@ namespace ear {
         float scale = 1.0f / (end - start);
         for (SampleIndex i = range_start; i < range_end; i++) {
           for (size_t out_channel = 0;
-               out_channel < start_point.size() ? start_point[0].size() : 0;
+               out_channel < (start_point.size() ? start_point[0].size() : 0);
                out_channel++) {
             out[out_channel][i] = 0.0;
           }
@@ -276,7 +277,7 @@ namespace ear {
                                  const Point &point) {
         for (SampleIndex i = range_start; i < range_end; i++) {
           for (size_t out_channel = 0;
-               out_channel < point.size() ? point[0].size() : 0;
+               out_channel < (point.size() ? point[0].size() : 0);
                out_channel++) {
             out[out_channel][i] = 0.0;
           }
