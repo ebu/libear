@@ -27,6 +27,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/test_data" DESTINATION ${PROJECT_BINARY_D
 if(EAR_INTERNAL_TESTS)
     add_ear_test("decorrelate_tests")
     add_ear_test("extent_tests")
+    target_sources(extent_tests PRIVATE "reference/extent.cpp")
     add_ear_test("gain_calculator_direct_speakers_tests")
     add_ear_test("geom_tests")
     add_ear_test("hoa_tests")

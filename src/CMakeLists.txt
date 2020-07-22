@@ -27,7 +27,9 @@ add_library(ear
   hoa/hoa.cpp
   layout.cpp
   screen.cpp
-  object_based/extent.cpp
+  object_based/polar_extent.cpp
+  object_based/polar_extent_scalar.cpp
+  object_based/polar_extent_simd.cpp
   object_based/gain_calculator_objects.cpp
   warnings.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/resources.hpp
@@ -80,6 +82,62 @@ else()
   target_compile_features(ear PUBLIC cxx_std_14)
 endif()
 set_target_properties(ear PROPERTIES CXX_EXTENSIONS OFF)
+
+include(CheckCompilerFlag)
+
+set(PER_ARCH_SOURCES object_based/polar_extent_simd_instance.cpp)
+function(add_arch_lib TARGET ARCH FLAGS)
+    check_compiler_flag(CXX "${FLAGS}" ear_has_flag_${ARCH}) # var is cached and must be unique
+    if (ear_has_flag_${ARCH})
+        list(APPEND XSIMD_ARCHS xsimd::${ARCH})
+        add_library(${TARGET}_${ARCH} OBJECT ${PER_ARCH_SOURCES})
+        target_sources(${TARGET} PRIVATE $<TARGET_OBJECTS:${TARGET}_${ARCH}>)
+
+        # copy relevant target properties to feature-specific objects
+        foreach(PROPERTY COMPILE_DEFINITIONS COMPILE_FEATURES INCLUDE_DIRECTORIES LINK_LIBRARIES
+                POSITION_INDEPENDENT_CODE CXX_VISIBILITY_PRESET C_VISIBILITY_PRESET VISIBILITY_INLINES_HIDDEN)
+            get_target_property(VALUE ${TARGET} ${PROPERTY})
+            if (NOT VALUE STREQUAL "VALUE-NOTFOUND")
+                set_property(TARGET ${TARGET}_${ARCH} PROPERTY ${PROPERTY} ${VALUE})
+            endif()
+        endforeach()
+
+        target_compile_definitions(${TARGET}_${ARCH} PRIVATE XSIMD_ARCH=xsimd::${ARCH})
+
+        target_compile_options(${TARGET}_${ARCH} PRIVATE ${FLAGS})
+    endif()
+
+    set(XSIMD_ARCHS "${XSIMD_ARCHS}" PARENT_SCOPE)
+endfunction()
+
+if (EAR_SIMD)
+    # add_arch_lib must be called from best to worst instruction set
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|X86|i686")
+        if (MSVC)
+            add_arch_lib(ear avx512bw "/arch:AVX512")
+            add_arch_lib(ear avx2_fma "/arch:AVX2")
+            add_arch_lib(ear avx "/arch:AVX")
+        else()
+            add_arch_lib(ear avx512bw "-mavx512bw;-mavx512dq;-mavx512cd;-mavx512f;-mfma;-mavx2;-mavx")
+            add_arch_lib(ear avx2_fma "-mfma;-mavx2;-mavx")
+            add_arch_lib(ear avx "-mavx")
+            add_arch_lib(ear sse4_2 "-msse4.2")
+        endif()
+        add_arch_lib(ear default_arch "")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM.*|arm.*|aarch64.*")
+        # for arm, flags are not generally needed as the FP extension support is
+        # closely tied to the ISA, so just build the default and fallback
+        #
+        # this can go wrong if the compiler doesn't actually support neon, but it's
+        # tricky to detect that
+        add_arch_lib(ear default_arch "")
+    endif()
+endif()
+
+list(APPEND XSIMD_ARCHS xsimd::generic_for_dispatch)
+
+list(JOIN XSIMD_ARCHS "," XSIMD_ARCHS_STR)
+target_compile_definitions(ear PRIVATE "XSIMD_ARCHS=${XSIMD_ARCHS_STR}")
 
 include(GenerateExportHeader)
 generate_export_header(ear

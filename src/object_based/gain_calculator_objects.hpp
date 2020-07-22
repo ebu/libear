@@ -9,7 +9,7 @@
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"
 #include "ear/warnings.hpp"
-#include "extent.hpp"
+#include "polar_extent.hpp"
 #include "zone_exclusion.hpp"
 
 namespace ear {
@@ -36,9 +36,10 @@ namespace ear {
     ScreenEdgeLockHandler _screenEdgeLockHandler;
     ScreenScaleHandler _screenScaleHandler;
     ChannelLockHandler _channelLockHandler;
-    PolarExtentPanner _polarExtentPanner;
+    PolarExtent _polarExtentPanner;
     ZoneExclusionHandler _zoneExclusionHandler;
     Eigen::Array<bool, Eigen::Dynamic, 1> _isLfe;
+    Eigen::VectorXd _pvTmp;
   };
 
 }  // namespace ear

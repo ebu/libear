@@ -29,9 +29,10 @@ namespace ear {
         _screenEdgeLockHandler(ScreenEdgeLockHandler(_layout.screen())),
         _screenScaleHandler(ScreenScaleHandler(_layout.screen())),
         _channelLockHandler(ChannelLockHandler(_layout.withoutLfe())),
-        _polarExtentPanner(PolarExtentPanner(_pointSourcePanner)),
+        _polarExtentPanner(_pointSourcePanner),
         _zoneExclusionHandler(ZoneExclusionHandler(_layout.withoutLfe())),
-        _isLfe(copy_vector<decltype(_isLfe)>(layout.isLfe())){};
+        _isLfe(copy_vector<decltype(_isLfe)>(layout.isLfe())),
+        _pvTmp(_pointSourcePanner->numberOfOutputChannels()){};
 
   void GainCalculatorObjectsImpl::calculate(const ObjectsTypeMetadata& metadata,
                                             OutputGains& direct,
@@ -47,12 +48,12 @@ namespace ear {
 
     Eigen::Vector3d position =
         toCartesianVector3d(boost::get<PolarPosition>(metadata.position));
-    auto pv = _polarExtentPanner.handle(position, metadata.width,
-                                        metadata.height, metadata.depth);
-    pv *= metadata.gain;
+    _polarExtentPanner.handle(position, metadata.width, metadata.height,
+                              metadata.depth, _pvTmp);
+    _pvTmp *= metadata.gain;
 
     Eigen::VectorXd pv_full = Eigen::VectorXd::Zero(_isLfe.size());
-    mask_write(pv_full, !_isLfe, pv);
+    mask_write(pv_full, !_isLfe, _pvTmp);
 
     // apply diffuse split
     direct.write_vector(pv_full * std::sqrt(1.0 - metadata.diffuse));

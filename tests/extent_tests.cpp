@@ -1,4 +1,5 @@
 #include <Eigen/Core>
+#include <boost/make_unique.hpp>
 #include <catch2/catch.hpp>
 #include <memory>
 #include <tuple>
@@ -6,7 +7,9 @@
 #include "common/geom.hpp"
 #include "common/helpers/eigen_helpers.hpp"
 #include "ear/bs2051.hpp"
-#include "object_based/extent.hpp"
+#include "eigen_utils.hpp"
+#include "object_based/polar_extent.hpp"
+#include "reference/extent.hpp"
 
 using namespace ear;
 
@@ -49,38 +52,9 @@ TEST_CASE("test_basis") {
   REQUIRE(calcBasis(cart(90.0, -90.0 + 1e-6, 1.0)).isApprox(expected, eps));
 }
 
-TEST_CASE("test_azimuth_elevation_on_basis") {
-  double eps = 1e-6;
-
-  double azimuth, elevation;
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 10.0, 1.0));
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 20.0, 1.0));
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(radians(10.0)).margin(eps));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(-20.0, 0.0, 1.0));
-  REQUIRE(azimuth == Approx(radians(10.0)).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-}
-
-TEST_CASE("test_cart_on_basis") {
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, 0.0, radians(10.0)).isApprox(cart(0.0, 20.0, 1.0)));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, radians(10.0), 0.0).isApprox(cart(-20.0, 0.0, 1.0)));
-}
-
 TEST_CASE("test_weight_func") {
+  // this isn't exposed by the real implementation; test the reference version,
+  // which is checked against the real implementation in same_as_reference
   double fade = 10.0;
   double height = 10.0;
 
@@ -100,13 +74,15 @@ TEST_CASE("test_weight_func") {
                         Eigen::Vector4d{0, 1, 1, 0});
 
       point = cart(azimuth, elevation, 1.0);
-      WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-      actual = weightingFunc(point);
+      reference::WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width,
+                                                 height);
+      actual = weightingFunc(point.transpose());
       REQUIRE(actual == Approx(expected));
       // Swapped
       point = cart(elevation, azimuth, 1.0);
-      WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-      actual = weightingFuncSwap(point);
+      reference::WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0),
+                                                     height, width);
+      actual = weightingFuncSwap(point.transpose());
       REQUIRE(actual == Approx(expected));
     }
   }
@@ -118,13 +94,15 @@ TEST_CASE("test_weight_func") {
                              Eigen::Vector4d{0, 1, 1, 0});
 
     point = cart(azimuth, 0.0, 1.0);
-    WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-    actual = weightingFunc(point);
+    reference::WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width,
+                                               height);
+    actual = weightingFunc(point.transpose());
     REQUIRE(actual == Approx(expected));
     // Swapped
     point = cart(0.0, azimuth, 1.0);
-    WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-    actual = weightingFuncSwap(point);
+    reference::WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height,
+                                                   width);
+    actual = weightingFuncSwap(point.transpose());
     REQUIRE(actual == Approx(expected));
   }
 }
@@ -132,24 +110,95 @@ TEST_CASE("test_weight_func") {
 TEST_CASE("test_pv") {
   Layout layout = getLayout("9+10+3").withoutLfe();
   std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
-  PolarExtentPanner extentPanner(psp);
+  PolarExtent extentPanner(psp);
+  Eigen::VectorXd pvs{psp->numberOfOutputChannels()};
 
-  REQUIRE(extentPanner.calcPvSpread(cart(0.0, 0.0, 1.0), 0.0, 0.0) ==
-          psp->handle(cart(0.0, 0.0, 1.0)).get());
-  REQUIRE(extentPanner.calcPvSpread(cart(10.0, 20.0, 1.0), 0.0, 0.0) ==
-          psp->handle(cart(10.0, 20.0, 1.0)).get());
+  extentPanner.handle(cart(0.0, 0.0, 1.0), 0.0, 0.0, 0.0, pvs);
+  REQUIRE(pvs == psp->handle(cart(0.0, 0.0, 1.0)).get());
+  extentPanner.handle(cart(10.0, 20.0, 1.0), 0.0, 0.0, 0.0, pvs);
+  REQUIRE(pvs == psp->handle(cart(10.0, 20.0, 1.0)).get());
 
   std::vector<std::pair<Eigen::Vector3d, double>> positions{
-      std::make_pair(cart(0.0, 0.0, 1.0), 1e-10),
+      std::make_pair(cart(0.0, 0.0, 1.0), 1e-5),
       std::make_pair(cart(30.0, 10.0, 1.0), 1e-2)};
   for (auto position : positions) {
     Eigen::Vector3d pos = position.first;
     double tol = position.second;
-    Eigen::VectorXd spread_pv = extentPanner.calcPvSpread(pos, 20.0, 10.0);
-    REQUIRE(spread_pv.norm() == Approx(1.0));
+    extentPanner.handle(pos, 20.0, 10.0, 0.0, pvs);
+    REQUIRE(pvs.norm() == Approx(1.0));
     Eigen::VectorXd vv =
-        spread_pv.transpose() * toPositionsMatrix(layout.positions());
+        pvs.transpose() * toPositionsMatrix(layout.positions());
     vv /= vv.norm();
     REQUIRE(vv.isApprox(pos, tol));
   }
 }
+
+TEST_CASE("same_as_reference") {
+  Layout layout = getLayout("9+10+3").withoutLfe();
+  std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
+
+  PolarExtent extentPanner(psp);
+  PolarExtent extentPannerScalar(psp, get_polar_extent_core_scalar());
+  Eigen::VectorXd spread_pv{psp->numberOfOutputChannels()};
+
+  reference::PolarExtentPanner extentPannerReference(psp);
+
+  for (size_t i = 0; i < 1000; i++) {
+    Eigen::Vector3d pos = Eigen::Vector3d::Random();
+    pos.normalize();
+    Eigen::Vector2d size = (Eigen::Vector2d::Random().array() + 1) * 180;
+    double width = size(0);
+    double height = size(1);
+    Eigen::VectorXd spread_pv_reference =
+        extentPannerReference.handle(pos, width, height, 0.0);
+
+    INFO("size " << width << " " << height);
+    INFO("spread_pv_reference " << spread_pv_reference.transpose());
+
+    extentPanner.handle(pos, width, height, 0.0, spread_pv);
+    INFO("spread_pv " << spread_pv.transpose());
+    CHECK(spread_pv.isApprox(spread_pv_reference, 1e-5));
+
+    extentPannerScalar.handle(pos, width, height, 0.0, spread_pv);
+    INFO("spread_pv scalar " << spread_pv.transpose());
+    CHECK(spread_pv.isApprox(spread_pv_reference, 1e-5));
+  }
+}
+
+#ifdef CATCH_CONFIG_ENABLE_BENCHMARKING
+TEST_CASE("bench_panner", "[.benchmark]") {
+  Layout layout = getLayout("9+10+3").withoutLfe();
+  std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
+  reference::PolarExtentPanner extentPannerRef(psp);
+
+  PolarExtent extentPanner(psp);
+  PolarExtent extentPannerScalar(psp, get_polar_extent_core_scalar());
+  Eigen::VectorXd pvs{psp->numberOfOutputChannels()};
+
+  Eigen::Vector3d pos(1, 1, 1);
+  pos.normalize();
+
+  std::vector<std::pair<double, double>> sizes = {
+      {5, 5}, {30, 30}, {30, 50}, {90, 90}, {135, 135}, {360, 360},
+  };
+
+  for (auto &width_height : sizes) {
+    double width, height;
+    std::tie(width, height) = width_height;
+    std::string size_name =
+        std::to_string((int)width) + " " + std::to_string((int)height);
+
+    BENCHMARK("ref " + size_name) {
+      return extentPannerRef.handle(pos, width, height, 0.0);
+    };
+
+    BENCHMARK("impl scalar " + size_name) {
+      return extentPannerScalar.handle(pos, width, height, 0.0, pvs);
+    };
+
+    BENCHMARK("impl " + size_name) {
+      return extentPanner.handle(pos, width, height, 0.0, pvs);
+    };
+  }
+}
+#endif
