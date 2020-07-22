@@ -58,7 +58,8 @@ namespace ear {
   }
 
   std::pair<double, double> azimuthElevationOnBasis(
-      Eigen::Matrix3d basis, Eigen::RowVector3d position) {
+      const Eigen::Matrix3d &basis,
+      const Eigen::Ref<Eigen::RowVector3d> &position) {
     // project onto each basis, and clip components to keep asin happy
     Eigen::Vector3d components =
         (position * basis.transpose()).cwiseMin(1.0).cwiseMax(-1.0);
@@ -106,7 +107,8 @@ namespace ear {
         cartOnBasis(_flippedBasis, _circlePos, 0.0);
   }
 
-  double WeightingFunction::operator()(Eigen::Vector3d position) const {
+  double WeightingFunction::operator()(
+      const Eigen::Ref<Eigen::RowVector3d> &position) const {
     // Flipped azimuths and elevations; the straight edges are always along
     // azimuth lines.
     double azimuth, elevation;
@@ -123,8 +125,7 @@ namespace ear {
     } else {
       // distance from the closest circle centre
       size_t nearest_circle = azimuth < 0 ? 0 : 1;
-      double angle =
-          position.transpose() * _circlePositions.col(nearest_circle);
+      double angle = position * _circlePositions.col(nearest_circle);
       double circleDistance = acos(boost::algorithm::clamp(angle, -1.0, 1.0));
       distance = circleDistance - _circleRadius;
     }
@@ -141,7 +142,7 @@ namespace ear {
   }
 
   Eigen::VectorXd SpreadingPanner::panningValuesForWeight(
-      const WeightingFunction& weightFunc) {
+      const WeightingFunction &weightFunc) {
     Eigen::VectorXd weights(_panningPositions.rows());
     for (int i = 0; i < _panningPositions.rows(); ++i) {
       weights(i) = weightFunc(_panningPositions.row(i));

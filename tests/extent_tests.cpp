@@ -56,16 +56,16 @@ TEST_CASE("test_azimuth_elevation_on_basis") {
   Eigen::Matrix3d basis;
   basis = calcBasis(cart(0.0, 10.0, 1.0));
   std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 10.0, 1.0));
+      azimuthElevationOnBasis(basis, cart(0.0, 10.0, 1.0).transpose());
   REQUIRE(azimuth == Approx(0.0).margin(eps));
   REQUIRE(elevation == Approx(0.0).margin(eps));
   std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 20.0, 1.0));
+      azimuthElevationOnBasis(basis, cart(0.0, 20.0, 1.0).transpose());
   REQUIRE(azimuth == Approx(0.0).margin(eps));
   REQUIRE(elevation == Approx(radians(10.0)).margin(eps));
   basis = calcBasis(cart(-10.0, 0.0, 1.0));
   std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(-20.0, 0.0, 1.0));
+      azimuthElevationOnBasis(basis, cart(-20.0, 0.0, 1.0).transpose());
   REQUIRE(azimuth == Approx(radians(10.0)).margin(eps));
   REQUIRE(elevation == Approx(0.0).margin(eps));
 }
@@ -101,12 +101,12 @@ TEST_CASE("test_weight_func") {
 
       point = cart(azimuth, elevation, 1.0);
       WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-      actual = weightingFunc(point);
+      actual = weightingFunc(point.transpose());
       REQUIRE(actual == Approx(expected));
       // Swapped
       point = cart(elevation, azimuth, 1.0);
       WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-      actual = weightingFuncSwap(point);
+      actual = weightingFuncSwap(point.transpose());
       REQUIRE(actual == Approx(expected));
     }
   }
@@ -119,12 +119,12 @@ TEST_CASE("test_weight_func") {
 
     point = cart(azimuth, 0.0, 1.0);
     WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-    actual = weightingFunc(point);
+    actual = weightingFunc(point.transpose());
     REQUIRE(actual == Approx(expected));
     // Swapped
     point = cart(0.0, azimuth, 1.0);
     WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-    actual = weightingFuncSwap(point);
+    actual = weightingFuncSwap(point.transpose());
     REQUIRE(actual == Approx(expected));
   }
 }
