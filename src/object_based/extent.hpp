@@ -30,7 +30,8 @@ namespace ear {
                               double elevation);
 
   std::pair<double, double> azimuthElevationOnBasis(
-      Eigen::Matrix3d basis, Eigen::RowVector3d position);
+      const Eigen::Matrix3d &basis,
+      const Eigen::Ref<Eigen::RowVector3d> &position);
 
   /** @brief Weighting function for spread sources.
    *
@@ -64,7 +65,7 @@ namespace ear {
     WeightingFunction(Eigen::Vector3d position, double width, double height);
 
     /** @brief Calculate weight for position */
-    double operator()(Eigen::Vector3d position) const;
+    double operator()(const Eigen::Ref<Eigen::RowVector3d> &position) const;
 
    private:
     const double _fadeWidth = 10.0;
@@ -87,7 +88,7 @@ namespace ear {
      *
      * @return panning value for each speaker.
      */
-    Eigen::VectorXd panningValuesForWeight(const WeightingFunction& weightFunc);
+    Eigen::VectorXd panningValuesForWeight(const WeightingFunction &weightFunc);
 
    private:
     /** @brief Generate points spread evenly on the sphere.
@@ -105,7 +106,7 @@ namespace ear {
 
     std::shared_ptr<PointSourcePanner> _psp;
     int _nRows;
-    Eigen::MatrixXd _panningPositions;
+    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> _panningPositions;
     Eigen::MatrixXd _panningPositionsResults;
   };
 
