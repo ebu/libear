@@ -1,3 +1,4 @@
 BasedOnStyle: Google
 NamespaceIndentation: All
 AlignTrailingComments: false
+IncludeBlocks: Preserve
