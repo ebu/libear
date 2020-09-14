@@ -2,6 +2,7 @@
 
 #include "ear/helpers/assert.hpp"
 #include "ear/metadata.hpp"
+#include <algorithm>
 
 namespace ear {
 
