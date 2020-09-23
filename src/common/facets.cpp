@@ -80,7 +80,7 @@ namespace ear {
       {16, 3, 5, 14}, {16, 17, 5, 6}, {17, 4, 6, 15}, {9, 10, 5, 6},
   };
 
-  const std::map<std::string, std::vector<Facet>> FACETS = {
+  std::map<std::string, std::vector<Facet>> FACETS = {
       {"0+5+0", FACETS_0_5_0},   {"2+5+0", FACETS_2_5_0},
       {"4+5+0", FACETS_4_5_0},   {"4+5+1", FACETS_4_5_1},
       {"3+7+0", FACETS_3_7_0},   {"4+9+0", FACETS_4_9_0},

@@ -22,7 +22,7 @@ for layout_name in layouts:
     positions_nominal = np.concatenate(
         (layout_extra.nominal_positions, virtual_positions))
     facets = _convex_hull_facets(positions_nominal)
-    print('const std::vector<Facet> FACETS_' +
+    print('std::vector<Facet> FACETS_' +
           layout_name.replace('+', '_') + ' = {')
     for facet in facets:
         print(str(facet) + ',')
