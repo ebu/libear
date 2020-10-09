@@ -87,4 +87,8 @@ namespace ear {
       {"9+10+3", FACETS_9_10_3}, {"0+7+0", FACETS_0_7_0},
       {"4+7+0", FACETS_4_7_0},
   };
+
+  void registerFacets(const std::string &layoutName, std::vector<Facet> facets) {
+    FACETS[layoutName] = std::move(facets);
+  }
 }  // namespace ear

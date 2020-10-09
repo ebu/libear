@@ -1,10 +1,9 @@
 #pragma once
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
+#include "ear/layout.hpp"
 
 namespace ear {
-  using Facet = std::set<int>;
   extern std::map<std::string, std::vector<Facet>> FACETS;
 }  // namespace ear

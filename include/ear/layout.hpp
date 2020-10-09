@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/optional.hpp>
+#include <set>
 #include <string>
 #include <vector>
 #include "common_types.hpp"
@@ -95,4 +96,12 @@ namespace ear {
     boost::optional<Screen> _screen;
   };
 
+  using Facet = std::set<int>;
+  /// Set the facets to be used when triangulating a named layout.
+  ///
+  /// This is used for rendering with custom loudspeaker layouts; see
+  /// tools/create_facets_cpp.py for code to generate these. In general the use
+  /// of this function can result in non-standard behaviour.
+  void EAR_EXPORT registerFacets(const std::string& layoutName,
+                                 std::vector<Facet> facets);
 }  // namespace ear
