@@ -9,6 +9,10 @@
 #include "../common/geom.hpp"
 #include "../common/helpers/eigen_helpers.hpp"
 
+#ifndef EAR_DISABLE_HTM
+#include "extent_htm.hpp"
+#endif
+
 const double PI = boost::math::constants::pi<double>();
 
 namespace ear {
@@ -110,7 +114,10 @@ namespace ear {
     // high from here in.
     if (_height > _width) {
       std::swap(_height, _width);
-      _flippedBasis = basises.colwise().reverse();
+      // rotate rather than flipping x and y to preserve triangle winding
+      Eigen::Matrix3d m;
+      m << 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0;
+      _flippedBasis = m * basises;
     } else {
       _flippedBasis = basises;
     }
@@ -231,8 +238,13 @@ namespace ear {
 
   static std::unique_ptr<SpreadingPannerBase> make_default_spreading_panner(
       std::shared_ptr<PointSourcePanner> psp) {
+#ifdef EAR_DISABLE_HTM
     return boost::make_unique<SpreadingPanner>(psp,
                                                PolarExtentPanner::nRowsDefault);
+#else
+    return boost::make_unique<SpreadingPannerHTM>(
+        psp, PolarExtentPanner::nRowsDefault, 1);
+#endif
   }
 
   PolarExtentPanner::PolarExtentPanner(std::shared_ptr<PointSourcePanner> psp)

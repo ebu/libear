@@ -123,7 +123,9 @@ TEST_CASE("test_weight_func") {
 TEST_CASE("test_pv") {
   Layout layout = getLayout("9+10+3").withoutLfe();
   std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
-  PolarExtentPanner extentPanner(psp);
+  PolarExtentPanner extentPanner(psp,
+                                 boost::make_unique<SpreadingPanner>(
+                                     psp, PolarExtentPanner::nRowsDefault));
 
   REQUIRE(extentPanner.calcPvSpread(cart(0.0, 0.0, 1.0), 0.0, 0.0) ==
           psp->handle(cart(0.0, 0.0, 1.0)).get());

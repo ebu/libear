@@ -33,6 +33,19 @@ add_library(ear
   ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
 )
 
+# only include HTM-related sources if not disabled; these are used in tests, so
+# must be absolute paths
+set(EAR_HTM_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/object_based/extent_htm.cpp
+    ${PROJECT_SOURCE_DIR}/src/object_based/htm.cpp
+)
+set(EAR_HTM_SOURCES "${EAR_HTM_SOURCES}" PARENT_SCOPE)
+if(EAR_DISABLE_HTM)
+    target_compile_definitions(ear PRIVATE EAR_DISABLE_HTM)
+else()
+    target_sources(ear PRIVATE ${EAR_HTM_SOURCES})
+endif()
+
 target_include_directories(ear
   PRIVATE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/submodules/kissfft>

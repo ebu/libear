@@ -123,6 +123,8 @@ namespace ear {
 
     // is the extent shape circular? this simplifies some logic
     bool is_circular;
+
+    friend class WeightingFunctionEdges;
   };
 
   class SpreadingPannerBase {
