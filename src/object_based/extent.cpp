@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <boost/algorithm/clamp.hpp>
+#include <boost/make_unique.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <cmath>
 #include <utility>
@@ -37,6 +38,46 @@ namespace ear {
                   Eigen::Vector3d(0.0, extent, 360.0));
   }
 
+  AngleToWeight::AngleToWeight() {}
+  AngleToWeight::AngleToWeight(double start_angle, double end_angle)
+      // tolerance in end_angle is to make sure that if start_angle is less
+      // than PI but end_angle isn't, we always use interpolation after
+      // start_angle
+      : cos_start_angle(start_angle < PI ? std::cos(start_angle) : -1.0),
+        cos_end_angle(end_angle < PI ? std::cos(end_angle) : -(1.0 + 1e-6)),
+        // sin is only used for less than PI/2
+        sin_start_angle(start_angle < PI / 2 ? std::sin(start_angle) : 1.0),
+        sin_end_angle(end_angle < PI / 2 ? std::sin(end_angle) : 1.0 + 1e-6),
+        // between start and end angle, we want:
+        // out = (angle - end_angle) / (start_angle - end_angle)
+        // therefore the slope is:
+        m(1.0 / (start_angle - end_angle)),
+        // out = m * (angle - end_angle)
+        // out = m * angle - m * end_angle
+        // intercept is:
+        c(-m * end_angle) {
+    ear_assert(start_angle >= 0, "start angle should be +ve");
+    ear_assert(end_angle >= 0, "end angle should be +ve");
+  }
+
+  double AngleToWeight::from_cos(double cos_angle) const {
+    if (cos_angle >= cos_start_angle)
+      return 1.0;
+    else if (cos_angle <= cos_end_angle)
+      return 0.0;
+    else
+      return m * std::acos(cos_angle) + c;
+  }
+
+  double AngleToWeight::from_sin(double sin_angle) const {
+    if (sin_angle <= sin_start_angle)
+      return 1.0;
+    else if (sin_angle >= sin_end_angle)
+      return 0.0;
+    else
+      return m * std::asin(sin_angle) + c;
+  }
+
   Eigen::Matrix3d calcBasis(Eigen::Vector3d position) {
     position = safeNormPosition(position);
     double az = azimuth(position);
@@ -57,19 +98,6 @@ namespace ear {
     return cartPosRel * basis;
   }
 
-  std::pair<double, double> azimuthElevationOnBasis(
-      const Eigen::Matrix3d &basis,
-      const Eigen::Ref<Eigen::RowVector3d> &position) {
-    // project onto each basis, and clip components to keep asin happy
-    Eigen::Vector3d components =
-        (position * basis.transpose()).cwiseMin(1.0).cwiseMax(-1.0);
-
-    double azimuth = atan2(components(0), components(1));
-    double elevation = asin(components(2));
-
-    return std::make_pair(azimuth, elevation);
-  }
-
   WeightingFunction::WeightingFunction(Eigen::Vector3d position, double width,
                                        double height) {
     _width = radians(width) / 2;
@@ -77,8 +105,6 @@ namespace ear {
 
     // basis vectors to rotate the vsource positions towards position
     Eigen::Matrix3d basises = calcBasis(position);
-
-    _circleRadius = std::min(_width, _height);
 
     // Flip the width and the height such that it is always wider than it is
     // high from here in.
@@ -98,62 +124,71 @@ namespace ear {
     _width = interp(_height, Eigen::Vector4d{0, PI / 4.0, PI / 2.0, PI},  //
                     Eigen::Vector4d{widthMod, widthMod, _width, _width});  //
 
-    // angle of the circle centres from the source position; width is to the
-    // end of the rectangle.
-    _circlePos = _width - _circleRadius;
+    right_circle_centre << sin(circlePos()), cos(circlePos());
+    circle_test << -cos(circlePos()), sin(circlePos());
 
-    // Cartesian circle centres
-    _circlePositions << cartOnBasis(_flippedBasis, -_circlePos, 0.0),
-        cartOnBasis(_flippedBasis, _circlePos, 0.0);
+    angle_to_weight =
+        AngleToWeight(circleRadius(), circleRadius() + radians(_fadeWidth));
+
+    is_circular = (_width - _height) < 1e-6;
+
+    weight_cb = is_circular ? weight_circle : weight_stadium;
+  }
+
+  double WeightingFunction::weight_circle(
+      const WeightingFunction &self,
+      const Eigen::Ref<Eigen::RowVector3d> &position) {
+    // simplified dot product assuming that circle_centre is {0, 1, 0}
+    double dot = self._flippedBasis.row(1).dot(position);
+    return self.angle_to_weight.from_cos(dot);
+  }
+
+  double WeightingFunction::weight_stadium(
+      const WeightingFunction &self,
+      const Eigen::Ref<Eigen::RowVector3d> &position) {
+    Eigen::RowVector3d position_t = self._flippedBasis * position.transpose();
+
+    Eigen::RowVector3d position_t_right = position_t;
+    position_t_right(0) = std::abs(position_t(0));
+
+    // for the straight lines
+    if (position_t_right.head<2>() * self.circle_test >= 0) {
+      return self.angle_to_weight.from_sin(std::abs(position_t(2)));
+    } else {
+      double dot = self.right_circle_centre.dot(position_t_right.head<2>());
+
+      return self.angle_to_weight.from_cos(dot);
+    }
   }
 
   double WeightingFunction::operator()(
       const Eigen::Ref<Eigen::RowVector3d> &position) const {
-    // Flipped azimuths and elevations; the straight edges are always along
-    // azimuth lines.
-    double azimuth, elevation;
-    std::tie(azimuth, elevation) =
-        azimuthElevationOnBasis(_flippedBasis, position);
-
-    // The distance is the angle away from the defined shape; 0 or negative is
-    // inside.
-    double distance = 0.0;
-
-    // for the straight lines
-    if (std::abs(azimuth) <= _circlePos) {
-      distance = std::abs(elevation) - _circleRadius;
-    } else {
-      // distance from the closest circle centre
-      size_t nearest_circle = azimuth < 0 ? 0 : 1;
-      double angle = position * _circlePositions.col(nearest_circle);
-      double circleDistance = acos(boost::algorithm::clamp(angle, -1.0, 1.0));
-      distance = circleDistance - _circleRadius;
-    }
-    // fade the weight from one to zero over fadeWidth
-    return interp(distance, Eigen::Vector2d{0.0, radians(_fadeWidth)},
-                  Eigen::Vector2d{1.0, 0.0});
+    return weight_cb(*this, position);
   }
 
   SpreadingPanner::SpreadingPanner(std::shared_ptr<PointSourcePanner> psp,
                                    int nRows)
-      : _psp(psp), _nRows(nRows) {
-    _panningPositions = _generatePanningPositionsEven();
-    _panningPositionsResults = _generatePanningPositionsResults();
-  }
+      : SpreadingPannerBase(),
+        _panningPositions(_generatePanningPositionsEven(nRows)),
+        _panningPositionsResults(
+            _generatePanningPositionsResults(psp, _panningPositions)) {}
 
   Eigen::VectorXd SpreadingPanner::panningValuesForWeight(
       const WeightingFunction &weightFunc) {
-    Eigen::VectorXd weights(_panningPositions.rows());
+    Eigen::VectorXd totalPv =
+        Eigen::VectorXd::Zero(_panningPositionsResults.rows());
     for (int i = 0; i < _panningPositions.rows(); ++i) {
-      weights(i) = weightFunc(_panningPositions.row(i));
+      double weight = weightFunc(_panningPositions.row(i));
+      if (weight != 0.0)
+        totalPv.noalias() += _panningPositionsResults.col(i) * weight;
     }
-    Eigen::VectorXd totalPv = weights.transpose() * _panningPositionsResults;
-    return totalPv / totalPv.norm();
+    totalPv /= totalPv.norm();
+    return totalPv;
   }
 
-  Eigen::MatrixXd SpreadingPanner::_generatePanningPositionsEven() {
-    Eigen::VectorXd elevations =
-        Eigen::VectorXd::LinSpaced(_nRows, -90.0, 90.0);
+  Eigen::MatrixXd SpreadingPannerBase::_generatePanningPositionsEven(
+      int nRows) {
+    Eigen::VectorXd elevations = Eigen::VectorXd::LinSpaced(nRows, -90.0, 90.0);
     Eigen::MatrixXd positions(0, 3);
 
     for (double el : elevations) {
@@ -162,7 +197,7 @@ namespace ear {
       double perimiter_centre = 2 * PI;
 
       int nPoints = static_cast<int>(
-          std::round((perimiter / perimiter_centre) * 2 * (_nRows - 1)));
+          std::round((perimiter / perimiter_centre) * 2 * (nRows - 1)));
       if (nPoints == 0) {
         nPoints = 1;
       }
@@ -177,17 +212,31 @@ namespace ear {
     return positions;
   }
 
-  Eigen::MatrixXd SpreadingPanner::_generatePanningPositionsResults() {
-    Eigen::MatrixXd results(_panningPositions.rows(),
-                            _psp->numberOfOutputChannels());
-    for (int i = 0; i < _panningPositions.rows(); ++i) {
-      results.row(i) = _psp->handle(_panningPositions.row(i)).get();
+  Eigen::MatrixXd SpreadingPannerBase::_generatePanningPositionsResults(
+      std::shared_ptr<PointSourcePanner> psp,
+      const Eigen::Ref<const Eigen::MatrixXd> &positions) {
+    Eigen::MatrixXd results(psp->numberOfOutputChannels(), positions.rows());
+    for (int i = 0; i < positions.rows(); ++i) {
+      results.col(i) = psp->handle(positions.row(i)).get();
     }
     return results;
   }
 
+  const int PolarExtentPanner::nRowsDefault = 37;  // 5 degrees per row
+
+  PolarExtentPanner::PolarExtentPanner(
+      std::shared_ptr<PointSourcePanner> psp,
+      std::unique_ptr<SpreadingPannerBase> spreadingPanner)
+      : _psp(psp), _spreadingPanner(std::move(spreadingPanner)) {}
+
+  static std::unique_ptr<SpreadingPannerBase> make_default_spreading_panner(
+      std::shared_ptr<PointSourcePanner> psp) {
+    return boost::make_unique<SpreadingPanner>(psp,
+                                               PolarExtentPanner::nRowsDefault);
+  }
+
   PolarExtentPanner::PolarExtentPanner(std::shared_ptr<PointSourcePanner> psp)
-      : _psp(psp), _spreadingPanner(SpreadingPanner(psp, _nRows)){};
+      : PolarExtentPanner(psp, make_default_spreading_panner(psp)) {}
 
   Eigen::VectorXd PolarExtentPanner::calcPvSpread(Eigen::Vector3d position,
                                                   double width, double height) {
@@ -210,7 +259,7 @@ namespace ear {
 
       WeightingFunction weightingFunction(position, width, height);
       Eigen::VectorXd panning_values =
-          _spreadingPanner.panningValuesForWeight(weightingFunction);
+          _spreadingPanner->panningValuesForWeight(weightingFunction);
       pv += ammount_spread * panning_values.array().square();
     }
     return pv.sqrt().matrix();

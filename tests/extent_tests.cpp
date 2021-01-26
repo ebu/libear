@@ -6,9 +6,29 @@
 #include "common/geom.hpp"
 #include "common/helpers/eigen_helpers.hpp"
 #include "ear/bs2051.hpp"
+#include "eigen_utils.hpp"
 #include "object_based/extent.hpp"
 
 using namespace ear;
+
+TEST_CASE("test_AngleToWeight") {
+  for (int start_angle = 0; start_angle <= 180; start_angle += 2) {
+    int end_angle = start_angle + 10;
+    AngleToWeight atw(radians(start_angle), radians(end_angle));
+
+    Eigen::Vector2d interp_from{radians(start_angle), radians(end_angle)};
+    Eigen::Vector2d interp_to{1, 0};
+
+    for (int angle = 0; angle < 180; angle++) {
+      double angle_rad = radians(angle);
+
+      CHECK(atw.from_cos(std::cos(angle_rad)) ==
+            Approx(interp(angle_rad, interp_from, interp_to)));
+      CHECK(atw.from_sin(std::sin(angle_rad)) ==
+            Approx(interp(angle_rad, interp_from, interp_to)));
+    }
+  }
+}
 
 TEST_CASE("test_basis") {
   double eps = 1e-6;
@@ -47,37 +67,6 @@ TEST_CASE("test_basis") {
       0, 0, -1,  //
       0, 1, 0;
   REQUIRE(calcBasis(cart(90.0, -90.0 + 1e-6, 1.0)).isApprox(expected, eps));
-}
-
-TEST_CASE("test_azimuth_elevation_on_basis") {
-  double eps = 1e-6;
-
-  double azimuth, elevation;
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 10.0, 1.0).transpose());
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 20.0, 1.0).transpose());
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(radians(10.0)).margin(eps));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(-20.0, 0.0, 1.0).transpose());
-  REQUIRE(azimuth == Approx(radians(10.0)).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-}
-
-TEST_CASE("test_cart_on_basis") {
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, 0.0, radians(10.0)).isApprox(cart(0.0, 20.0, 1.0)));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, radians(10.0), 0.0).isApprox(cart(-20.0, 0.0, 1.0)));
 }
 
 TEST_CASE("test_weight_func") {
