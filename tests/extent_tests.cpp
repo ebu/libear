@@ -1,4 +1,5 @@
 #include <Eigen/Core>
+#include <boost/make_unique.hpp>
 #include <catch2/catch.hpp>
 #include <memory>
 #include <tuple>
@@ -8,6 +9,7 @@
 #include "ear/bs2051.hpp"
 #include "eigen_utils.hpp"
 #include "object_based/extent.hpp"
+#include "reference/extent.hpp"
 
 using namespace ear;
 
@@ -140,5 +142,54 @@ TEST_CASE("test_pv") {
         spread_pv.transpose() * toPositionsMatrix(layout.positions());
     vv /= vv.norm();
     REQUIRE(vv.isApprox(pos, tol));
+  }
+}
+
+TEST_CASE("reference_weight") {
+  for (size_t i = 0; i < 1000; i++) {
+    Eigen::Vector3d pos = Eigen::Vector3d::Random();
+    pos.normalize();
+    Eigen::Vector2d size = (Eigen::Vector2d::Random().array() + 1) * 180;
+    double width = size(0);
+    double height = size(1);
+
+    INFO("size " << width << " " << height);
+    INFO("pos " << pos.transpose());
+
+    WeightingFunction wf(pos, width, height);
+    reference::WeightingFunction wf_reference(pos, width, height);
+
+    for (size_t i = 0; i < 500; i++) {
+      Eigen::Vector3d sample_pos = Eigen::Vector3d::Random();
+      sample_pos.normalize();
+      double weight = wf(sample_pos.transpose());
+      double weight_reference = wf_reference(sample_pos.transpose());
+      CHECK(weight == Approx(weight_reference));
+    }
+  }
+}
+
+TEST_CASE("reference") {
+  Layout layout = getLayout("9+10+3").withoutLfe();
+  std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
+  PolarExtentPanner extentPanner(psp,
+                                 boost::make_unique<SpreadingPanner>(
+                                     psp, PolarExtentPanner::nRowsDefault));
+  reference::PolarExtentPanner extentPannerReference(psp);
+
+  for (size_t i = 0; i < 1000; i++) {
+    Eigen::Vector3d pos = Eigen::Vector3d::Random();
+    pos.normalize();
+    Eigen::Vector2d size = (Eigen::Vector2d::Random().array() + 1) * 180;
+    double width = size(0);
+    double height = size(1);
+    Eigen::VectorXd spread_pv = extentPanner.calcPvSpread(pos, width, height);
+    Eigen::VectorXd spread_pv_reference =
+        extentPannerReference.calcPvSpread(pos, width, height);
+
+    INFO("size " << width << " " << height);
+    INFO("spread_pv " << spread_pv.transpose());
+    INFO("spread_pv_reference " << spread_pv_reference.transpose());
+    CHECK(spread_pv.isApprox(spread_pv_reference, 1e-6));
   }
 }
