@@ -41,23 +41,25 @@ namespace ear {
       /// Process n samples.
       /// \param in input samples, n rows and num_channels_in cols
       /// \param out output samples, n rows and num_channels_out cols
-      void process(size_t nsamples, const float* const* in, float* const* out) {
+      void process(size_t nsamples_in, const float* const* in,
+                   float* const* out) {
+        Eigen::Index nsamples = nsamples_in;
         Eigen::Index sample = 0;
         while (sample < nsamples) {
           // move in -> input_buffer and out -> output_buffer until out of
           // samples (or input_buffer is full and output_buffer is empty)
-          Eigen::Index to_transfer = std::min((Eigen::Index)nsamples - sample,
-                                              block_size - samples_in_input);
+          Eigen::Index to_transfer =
+              std::min(nsamples - sample, block_size - samples_in_input);
 
-          for (size_t in_channel = 0; in_channel < input_buffer.cols();
+          for (Eigen::Index in_channel = 0; in_channel < input_buffer.cols();
                in_channel++)
-            for (size_t i = 0; i < to_transfer; i++)
+            for (Eigen::Index i = 0; i < to_transfer; i++)
               input_buffer(samples_in_input + i, in_channel) =
                   in[in_channel][sample + i];
 
-          for (size_t out_channel = 0; out_channel < output_buffer.cols();
+          for (Eigen::Index out_channel = 0; out_channel < output_buffer.cols();
                out_channel++)
-            for (size_t i = 0; i < to_transfer; i++)
+            for (Eigen::Index i = 0; i < to_transfer; i++)
               out[out_channel][sample + i] =
                   output_buffer(samples_in_input + i, out_channel);
 
