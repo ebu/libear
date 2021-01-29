@@ -16,7 +16,8 @@ namespace ear {
       /// with an offset of \p offset.
       template <typename T>
       void set_eigen(T &&mat, size_t offset = 0) {
-        ear_assert(mat.cols() == _ptrs.size(), "wrong number of channels");
+        ear_assert((size_t)mat.cols() == _ptrs.size(),
+                   "wrong number of channels");
         for (size_t i = 0; i < _ptrs.size(); i++) {
           _ptrs[i] = mat.col(i).data() + offset;
         }

@@ -16,8 +16,9 @@ namespace ear {
 
       /// Process an arbitrary number of samples. \p input and \p output have
       /// \c nchannels channels and \p nsamples samples.
-      void process(size_t nsamples, const float *const *input,
+      void process(size_t nsamples_in, const float *const *input,
                    float *const *output) {
+        Eigen::Index nsamples = nsamples_in;
         Eigen::Index nchannels = delaymem.cols();
         Eigen::Index delay = delaymem.rows();
 
