@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <boost/algorithm/clamp.hpp>
 #include <boost/make_unique.hpp>
+#include "convex_hull.hpp"
 #include "ear/bs2051.hpp"
 #include "ear/helpers/assert.hpp"
 #include "facets.hpp"
@@ -478,7 +479,10 @@ namespace ear {
 
     // Facets of the convex hull; each set represents a facet and contains the
     // indices of its corners in positions.
-    std::vector<Facet> facets = FACETS.at(layout.name());
+    auto facets_it = FACETS.find(layout.name());
+    std::vector<Facet> facets = facets_it != FACETS.end()
+                                    ? facets_it->second
+                                    : convex_hull(positionsNominal);
 
     // Turn the facets into regions for the point source panner.
     std::vector<std::unique_ptr<RegionHandler>> regions;
