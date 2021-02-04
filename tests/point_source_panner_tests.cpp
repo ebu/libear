@@ -5,6 +5,8 @@
 #include <catch2/catch.hpp>
 #include <random>
 #include <string>
+#include "common/convex_hull.hpp"
+#include "common/facets.hpp"
 #include "common/geom.hpp"
 #include "common/point_source_panner.hpp"
 #include "ear/bs2051.hpp"
@@ -529,6 +531,43 @@ TEST_CASE("screen_loudspeaker_positions") {
       for (auto& channel : layout.channels())
         if (channel.name() == "M-SC") channel.polarPosition({-30.0, 0.0, 1.0});
       REQUIRE_THROWS_AS(configurePolarPanner(layout), invalid_argument);
+    }
+  }
+}
+
+TEST_CASE("hull") {
+  for (auto& layoutFull : loadLayouts()) {
+    if (layoutFull.name() == "0+2+0") continue;
+    auto layout = layoutFull.withoutLfe();
+
+    SECTION(layout.name()) {
+      std::vector<Eigen::Vector3d> positionsReal;
+      std::vector<Eigen::Vector3d> positionsNominal;
+      std::set<int> virtualVerts;
+      Eigen::MatrixXd downmix;
+      std::tie(positionsReal, positionsNominal, virtualVerts, downmix) =
+          getAugmentedLayout(layout);
+
+      std::vector<Facet> facets_precomputed = FACETS.at(layout.name());
+
+      // check that we're not close to a tolerance that is too big or small
+      for (double tolerance : {1e-6, 1e-5, 1e-4}) {
+        SECTION("tol = " + std::to_string(tolerance)) {
+          std::vector<Facet> facets_calculated =
+              convex_hull(positionsNominal, tolerance);
+
+          std::sort(facets_precomputed.begin(), facets_precomputed.end());
+          std::sort(facets_calculated.begin(), facets_calculated.end());
+
+          REQUIRE(facets_precomputed == facets_calculated);
+        }
+      }
+
+#ifdef CATCH_CONFIG_ENABLE_BENCHMARKING
+      if (layout.name() == "9+10+3") {
+        BENCHMARK("hull") { return convex_hull(positionsNominal); };
+      }
+#endif
     }
   }
 }

@@ -13,6 +13,7 @@ add_custom_command(
 add_library(ear
   bs2051.cpp
   bs2051_layouts.cpp
+  common/convex_hull.cpp
   common/facets.cpp
   common/geom.cpp
   common/point_source_panner.cpp
