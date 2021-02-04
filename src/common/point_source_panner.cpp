@@ -419,16 +419,18 @@ namespace ear {
     return std::make_shared<PolarPointSourcePanner>(std::move(regions));
   }
 
-  std::shared_ptr<PointSourcePanner> configureFullPolarPanner(
-      const Layout& layout) {
+  std::tuple<std::vector<Eigen::Vector3d>, std::vector<Eigen::Vector3d>,
+             std::set<int>, Eigen::MatrixXd>
+  getAugmentedLayout(const Layout& layout) {
     // add some extra height speakers that are treated as real speakers until
     // the downmix in PointSourcePannerDownmix
+    std::vector<Channel> allChannels(layout.channels());
+
     std::vector<Channel> extraChannels;
     Eigen::MatrixXd downmix;
-    Layout layoutExtra(layout);
     std::tie(extraChannels, downmix) = extraPosVerticalNominal(layout);
     for (const auto& extraChannel : extraChannels) {
-      layoutExtra.channels().push_back(extraChannel);
+      allChannels.push_back(extraChannel);
     }
 
     // add some virtual speakers above and below that will be used as the
@@ -447,21 +449,32 @@ namespace ear {
       virtualPositions.push_back(Eigen::Vector3d{0.0, 0.0, 1.0});
     }
 
-    std::vector<PolarPosition> positionsRealVec = layoutExtra.positions();
     std::vector<Eigen::Vector3d> positionsReal;
-    std::transform(positionsRealVec.begin(), positionsRealVec.end(),
-                   std::back_inserter(positionsReal),
-                   [](PolarPosition pos) -> Eigen::Vector3d {
-                     return toNormalisedVector3d(pos);
-                   });
-    positionsReal.insert(positionsReal.end(), virtualPositions.begin(),
-                         virtualPositions.end());
-
+    std::vector<Eigen::Vector3d> positionsNominal;
     std::set<int> virtualVerts;
-    virtualVerts.insert(static_cast<int>(layoutExtra.channels().size()));
-    if (virtualPositions.size() == 2) {
-      virtualVerts.insert(static_cast<int>(layoutExtra.channels().size() + 1));
+
+    for (const Channel& channel : allChannels) {
+      positionsReal.push_back(toNormalisedVector3d(channel.polarPosition()));
+      positionsNominal.push_back(
+          toNormalisedVector3d(channel.polarPositionNominal()));
     }
+    for (const Eigen::Vector3d& pos : virtualPositions) {
+      virtualVerts.insert(static_cast<int>(positionsReal.size()));
+      positionsReal.push_back(pos);
+      positionsNominal.push_back(pos);
+    }
+
+    return {positionsReal, positionsNominal, virtualVerts, downmix};
+  }
+
+  std::shared_ptr<PointSourcePanner> configureFullPolarPanner(
+      const Layout& layout) {
+    std::vector<Eigen::Vector3d> positionsReal;
+    std::vector<Eigen::Vector3d> positionsNominal;
+    std::set<int> virtualVerts;
+    Eigen::MatrixXd downmix;
+    std::tie(positionsReal, positionsNominal, virtualVerts, downmix) =
+        getAugmentedLayout(layout);
 
     // Facets of the convex hull; each set represents a facet and contains the
     // indices of its corners in positions.

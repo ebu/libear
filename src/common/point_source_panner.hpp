@@ -2,6 +2,7 @@
 #include <Eigen/Core>
 #include <memory>
 #include <numeric>
+#include <set>
 #include <string>
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"
@@ -173,6 +174,17 @@ namespace ear {
    */
   std::pair<std::vector<Channel>, Eigen::MatrixXd> extraPosVerticalNominal(
       Layout layout);
+
+  // given a layout, determine the full set of loudspeaker positions used for
+  // panning. returns:
+  //
+  // - the real position of real and virtual loudspeakers
+  // - the nominal position of the real and virtual loudspeakers
+  // - the indices of the virtual loudspeakers in the two position lists
+  // - a downmix matrix to be applied to the output of the real loudspeakers
+  std::tuple<std::vector<Eigen::Vector3d>, std::vector<Eigen::Vector3d>,
+             std::set<int>, Eigen::MatrixXd>
+  getAugmentedLayout(const Layout& layout);
 
   std::shared_ptr<PointSourcePanner> configureFullPolarPanner(
       const Layout& layout);
