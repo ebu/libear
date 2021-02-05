@@ -1,6 +1,8 @@
 # libear — Recommendation ITU-R BS.2127 core library
 
-[![Build Status](https://travis-ci.org/ebu/libear.svg?branch=master)](https://travis-ci.org/ebu/libear)
+[![](https://github.com/ebu/libear/workflows/Linux/badge.svg)](https://github.com/ebu/libear/actions?workflow=Linux)
+[![](https://github.com/ebu/libear/workflows/macOS/badge.svg)](https://github.com/ebu/libear/actions?workflow=macOS)
+[![](https://github.com/ebu/libear/workflows/Windows/badge.svg)](https://github.com/ebu/libear/actions?workflow=Windows)
 [![Documentation Status](https://readthedocs.org/projects/libear/badge/?version=latest)](https://libear.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/ebu/libear/branch/master/graph/badge.svg)](https://codecov.io/gh/ebu/libear)
 
