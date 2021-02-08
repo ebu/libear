@@ -12,7 +12,7 @@
 
 using namespace ear;
 
-using Gains = std::vector<float>;
+using Gains = std::vector<double>;
 
 DirectSpeakersTypeMetadata tmWithLabels(std::vector<std::string> labels) {
   DirectSpeakersTypeMetadata tm;
