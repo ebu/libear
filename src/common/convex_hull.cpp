@@ -12,7 +12,7 @@ namespace ear {
     // the mean point, guaranteed to be inside the convex hull
     Vec inside_point = Vec::Zero();
     for (auto &pos : positions) inside_point += pos;
-    inside_point /= positions.size();
+    inside_point /= (double)positions.size();
 
     // find all triangles on the convex hull:
     // - iterate through all possible triangles
