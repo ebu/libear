@@ -114,7 +114,7 @@ namespace ear {
     /// The delay introduced by the variable block size processing, not
     /// accounting for any delay introduced by the inner process.
     int VariableBlockSizeAdapter::get_delay() const {
-      return impl->get_delay();
+      return (int)impl->get_delay();
     }
 
     VariableBlockSizeAdapter::~VariableBlockSizeAdapter() = default;
