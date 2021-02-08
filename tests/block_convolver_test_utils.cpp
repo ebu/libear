@@ -15,7 +15,7 @@ Eigen::VectorXf generate_random(size_t len, size_t num_nonzero,
 
   std::mt19937 gen(seedval);
   for (size_t i = 0; i < num_nonzero; i++) {
-    data[std::uniform_int_distribution<int>(0, len - 1)(gen)] =
+    data[std::uniform_int_distribution<int>(0, (int)len - 1)(gen)] =
         std::uniform_real_distribution<float>()(gen);
   }
 
