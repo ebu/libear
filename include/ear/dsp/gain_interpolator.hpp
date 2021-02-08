@@ -52,7 +52,7 @@ namespace ear {
       ///     the interpolation type and points used
       void process(SampleIndex block_start, size_t nsamples,
                    const float *const *in, float *const *out) {
-        SampleIndex block_end = block_start + nsamples;
+        SampleIndex block_end = block_start + (SampleIndex)nsamples;
         SampleIndex this_block_start = block_start;
 
         while (this_block_start < block_end) {

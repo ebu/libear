@@ -23,8 +23,8 @@ void apply_interp(In &&in, Out &&out, SampleIndex block_start,
   PtrAdapter out_p(out.cols());
   out_p.set_eigen(out);
 
-  Interp::apply_interp(in_p.ptrs(), out_p.ptrs(), 0, in.rows(), block_start,
-                       start, end, start_point, end_point);
+  Interp::apply_interp(in_p.ptrs(), out_p.ptrs(), 0, (SampleIndex)in.rows(),
+                       block_start, start, end, start_point, end_point);
 }
 
 template <typename Interp = LinearInterpSingle, typename In, typename Out,
@@ -35,7 +35,8 @@ void apply_constant(In &&in, Out &&out, const Point &point) {
   PtrAdapter out_p(out.cols());
   out_p.set_eigen(out);
 
-  Interp::apply_constant(in_p.ptrs(), out_p.ptrs(), 0, in.rows(), point);
+  Interp::apply_constant(in_p.ptrs(), out_p.ptrs(), 0, (SampleIndex)in.rows(),
+                         point);
 }
 
 template <typename Interp>
@@ -90,7 +91,7 @@ void run_test(GainInterpolator<LinearInterpSingle> &interp,
       auto block =
           Eigen::seq(offset, std::min(offset + block_size, input.size()) - 1);
 
-      process(interp, offset, input(block), output(block));
+      process(interp, (SampleIndex)offset, input(block), output(block));
     }
     Eigen::internal::set_is_malloc_allowed(true);
 
