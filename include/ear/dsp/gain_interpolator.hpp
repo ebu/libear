@@ -9,10 +9,10 @@
 namespace ear {
   namespace dsp {
     /// \file
-    /// Utilities for applying interpoalted gain vectors to audio samples; see
+    /// Utilities for applying interpolated gain vectors to audio samples; see
     /// ear::dsp::GainInterpolator for details.
 
-    /// Type used to index into sample bufers.
+    /// Type used to index into sample buffers.
     using SampleIndex = long int;
 
     /// Gain interpolator, templated over an interpolation type which defines
