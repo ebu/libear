@@ -16,10 +16,10 @@ TEST_CASE("test") {
   auto do_process = [&](size_t block_size, const float *const *in,
                         float *const *out) {
     for (size_t i = 0; i < block_size; i++) {
-      out[0][i] = in[0][i] * 2.0;
-      out[1][i] = in[1][i] * 3.0;
-      out[2][i] = in[0][i] * 4.0;
-      out[3][i] = in[1][i] * 5.0;
+      out[0][i] = in[0][i] * 2.0f;
+      out[1][i] = in[1][i] * 3.0f;
+      out[2][i] = in[0][i] * 4.0f;
+      out[3][i] = in[1][i] * 5.0f;
     }
   };
 

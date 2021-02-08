@@ -130,7 +130,7 @@ namespace ear {
         ear_assert(in.size() <= down.size(), "down is incorrect size");
         ear_assert(in.size() <= up.size(), "up is incorrect size");
 
-        real_t i_scale = 1.0 / in.size();
+        real_t i_scale = (real_t)1.0 / (real_t)in.size();
 
         for (int i = 0; i < in.size(); i++) {
           real_t a_v = (real_t)i * i_scale;
@@ -209,7 +209,7 @@ namespace ear {
         }
 
         // scale factor for normalising the result of fft followed by inverse
-        real_t norm = 1.0 / (real_t)(2 * ctx->block_size);
+        real_t norm = (real_t)1.0 / (real_t)(2 * ctx->block_size);
 
         // Inverse fft, then send the first half plus the last tail to the
         // output, and write the second half to last_tail, to be used in the
