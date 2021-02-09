@@ -48,7 +48,7 @@ namespace ear {
     double min = std::numeric_limits<double>::max();
     for (int i = 1; i < vertices.rows(); ++i) {
       Eigen::Vector3d vertex = vertices.row(i).transpose() - centre;
-      double angle = abs(vertex.dot(a));
+      double angle = std::abs(vertex.dot(a));
       if (angle < min) {
         min = angle;
         b = vertex;

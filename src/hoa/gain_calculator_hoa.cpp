@@ -29,7 +29,7 @@ namespace ear {
     for (size_t i = 0; i < metadata.orders.size(); i++) {
       if (metadata.orders[i] < 0)
         throw invalid_argument("orders must not be negative");
-      if (abs(metadata.degrees[i]) > metadata.orders[i])
+      if (std::abs(metadata.degrees[i]) > metadata.orders[i])
         throw invalid_argument(
             "magnitude of degree must not be greater than order");
     }

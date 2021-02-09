@@ -159,8 +159,8 @@ namespace ear {
   std::vector<double> real_quadratic_roots(double a, double b, double c) {
     double eps = 1e-10;
 
-    if (abs(c) < eps) return {0.0};
-    if (abs(a) < eps) return {-c / b};
+    if (std::abs(c) < eps) return {0.0};
+    if (std::abs(a) < eps) return {-c / b};
 
     double det = b * b - 4.0 * a * c;
     if (det > eps)
@@ -294,8 +294,8 @@ namespace ear {
       if (currentLayerLayout.channels().size() != 0) {
         double azimuthRange = std::numeric_limits<double>::min();
         for (const auto& channel : currentLayerLayout.channels()) {
-          if (azimuthRange < abs(channel.polarPositionNominal().azimuth)) {
-            azimuthRange = abs(channel.polarPositionNominal().azimuth);
+          if (azimuthRange < std::abs(channel.polarPositionNominal().azimuth)) {
+            azimuthRange = std::abs(channel.polarPositionNominal().azimuth);
           }
         }
         azimuthLimit = azimuthRange + 40.0;
@@ -312,7 +312,8 @@ namespace ear {
 
       double epsilon = 1e-5;
       for (const auto& midChannel : midLayerLayout.channels()) {
-        if (abs(midChannel.polarPosition().azimuth) >= azimuthLimit - epsilon) {
+        if (std::abs(midChannel.polarPosition().azimuth) >=
+            azimuthLimit - epsilon) {
           extraChannels.push_back(Channel(
               "extra",
               PolarPosition(midChannel.polarPosition().azimuth,

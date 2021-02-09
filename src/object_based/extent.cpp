@@ -43,7 +43,7 @@ namespace ear {
     double el = elevation(position);
 
     // points near the poles have indeterminate azimuth; assume 0
-    if (abs(el) > (90.0 - 1e-5)) {
+    if (std::abs(el) > (90.0 - 1e-5)) {
       az = 0.0;
     }
     return localCoordinateSystem(az, el);
@@ -118,8 +118,8 @@ namespace ear {
     double distance = 0.0;
 
     // for the straight lines
-    if (abs(azimuth) <= _circlePos) {
-      distance = abs(elevation) - _circleRadius;
+    if (std::abs(azimuth) <= _circlePos) {
+      distance = std::abs(elevation) - _circleRadius;
     } else {
       // distance from the closest circle centre
       size_t nearest_circle = azimuth < 0 ? 0 : 1;

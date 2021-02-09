@@ -150,7 +150,7 @@ namespace ear {
       Channel channel = _layout.channels()[i];
       if (isLfe == _isLfe[i]) {
         if ((insideAngleRange(_azimuths(i), azMin, azMax, tol) ||
-             abs(_elevations(i)) >= 90.0 - tol) &&
+             std::abs(_elevations(i)) >= 90.0 - tol) &&
             (_elevations(i) > elMin - tol) && (_elevations(i) < elMax + tol) &&
             (_distances(i) > distMin - tol) &&
             (_distances(i) < distMax + tol)) {
@@ -213,7 +213,7 @@ namespace ear {
                    const std::pair<int, double>& b) -> bool {
                   return a.second < b.second;
                 });
-      if (abs(candidates[0].second - candidates[1].second) > tol) {
+      if (std::abs(candidates[0].second - candidates[1].second) > tol) {
         return candidates[0].first;
       }
     }
