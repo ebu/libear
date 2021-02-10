@@ -562,12 +562,20 @@ TEST_CASE("hull") {
           REQUIRE(facets_precomputed == facets_calculated);
         }
       }
-
-#ifdef CATCH_CONFIG_ENABLE_BENCHMARKING
-      if (layout.name() == "9+10+3") {
-        BENCHMARK("hull") { return convex_hull(positionsNominal); };
-      }
-#endif
     }
   }
 }
+
+#ifdef CATCH_CONFIG_ENABLE_BENCHMARKING
+TEST_CASE("hull_benchmark", "[.benchmark]") {
+  auto layout = getLayout("9+10+3").withoutLfe();
+
+  std::vector<Eigen::Vector3d> positionsReal, positionsNominal;
+  std::set<int> virtualVerts;
+  Eigen::MatrixXd downmix;
+  std::tie(positionsReal, positionsNominal, virtualVerts, downmix) =
+      getAugmentedLayout(layout);
+
+  BENCHMARK("hull 9+10+3") { return convex_hull(positionsNominal); };
+}
+#endif
