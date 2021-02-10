@@ -1,8 +1,8 @@
 #include "ear/bs2051.hpp"
 
+#include <algorithm>
 #include "ear/helpers/assert.hpp"
 #include "ear/metadata.hpp"
-#include <algorithm>
 
 namespace ear {
 
