@@ -124,7 +124,7 @@ namespace ear {
         template <typename T>
         struct ZeroTrack {
           template <typename... Args>
-          ZeroTrack(Args &&... args) : data(std::forward<Args>(args)...) {
+          ZeroTrack(Args &&...args) : data(std::forward<Args>(args)...) {
             clear();
           }
           T data;
