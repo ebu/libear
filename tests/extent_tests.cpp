@@ -28,8 +28,9 @@ TEST_CASE("test_AngleToWeight") {
 
       CHECK(atw.from_cos(std::cos(angle_rad)) ==
             Approx(interp(angle_rad, interp_from, interp_to)));
-      CHECK(atw.from_sin(std::sin(angle_rad)) ==
-            Approx(interp(angle_rad, interp_from, interp_to)));
+      if (angle <= 90.0)
+        CHECK(atw.from_sin(std::sin(angle_rad)) ==
+              Approx(interp(angle_rad, interp_from, interp_to)));
     }
   }
 }
