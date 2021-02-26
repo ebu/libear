@@ -1,4 +1,5 @@
 #include <Eigen/Core>
+#include <boost/make_unique.hpp>
 #include <catch2/catch.hpp>
 #include <memory>
 #include <tuple>
@@ -6,9 +7,33 @@
 #include "common/geom.hpp"
 #include "common/helpers/eigen_helpers.hpp"
 #include "ear/bs2051.hpp"
+#include "eigen_utils.hpp"
 #include "object_based/extent.hpp"
+#include "reference/extent.hpp"
 
 using namespace ear;
+
+TEST_CASE("test_AngleToWeight") {
+  for (double start_angle = 0.0; start_angle <= 180.0; start_angle += 2.0) {
+    double end_angle = start_angle + 10.0;
+    INFO("start: " << start_angle << " end: " << end_angle);
+    AngleToWeight atw(radians(start_angle), radians(end_angle));
+
+    Eigen::Vector2d interp_from{radians(start_angle), radians(end_angle)};
+    Eigen::Vector2d interp_to{1.0, 0.0};
+
+    for (double angle = 0.0; angle < 180.0; angle++) {
+      INFO("angle: " << angle);
+      double angle_rad = radians(angle);
+
+      CHECK(atw.from_cos(std::cos(angle_rad)) ==
+            Approx(interp(angle_rad, interp_from, interp_to)));
+      if (angle <= 90.0)
+        CHECK(atw.from_sin(std::sin(angle_rad)) ==
+              Approx(interp(angle_rad, interp_from, interp_to)));
+    }
+  }
+}
 
 TEST_CASE("test_basis") {
   double eps = 1e-6;
@@ -49,37 +74,6 @@ TEST_CASE("test_basis") {
   REQUIRE(calcBasis(cart(90.0, -90.0 + 1e-6, 1.0)).isApprox(expected, eps));
 }
 
-TEST_CASE("test_azimuth_elevation_on_basis") {
-  double eps = 1e-6;
-
-  double azimuth, elevation;
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 10.0, 1.0));
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(0.0, 20.0, 1.0));
-  REQUIRE(azimuth == Approx(0.0).margin(eps));
-  REQUIRE(elevation == Approx(radians(10.0)).margin(eps));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  std::tie(azimuth, elevation) =
-      azimuthElevationOnBasis(basis, cart(-20.0, 0.0, 1.0));
-  REQUIRE(azimuth == Approx(radians(10.0)).margin(eps));
-  REQUIRE(elevation == Approx(0.0).margin(eps));
-}
-
-TEST_CASE("test_cart_on_basis") {
-  Eigen::Matrix3d basis;
-  basis = calcBasis(cart(0.0, 10.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, 0.0, radians(10.0)).isApprox(cart(0.0, 20.0, 1.0)));
-  basis = calcBasis(cart(-10.0, 0.0, 1.0));
-  REQUIRE(
-      cartOnBasis(basis, radians(10.0), 0.0).isApprox(cart(-20.0, 0.0, 1.0)));
-}
-
 TEST_CASE("test_weight_func") {
   double fade = 10.0;
   double height = 10.0;
@@ -101,12 +95,12 @@ TEST_CASE("test_weight_func") {
 
       point = cart(azimuth, elevation, 1.0);
       WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-      actual = weightingFunc(point);
+      actual = weightingFunc(point.transpose());
       REQUIRE(actual == Approx(expected));
       // Swapped
       point = cart(elevation, azimuth, 1.0);
       WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-      actual = weightingFuncSwap(point);
+      actual = weightingFuncSwap(point.transpose());
       REQUIRE(actual == Approx(expected));
     }
   }
@@ -119,12 +113,12 @@ TEST_CASE("test_weight_func") {
 
     point = cart(azimuth, 0.0, 1.0);
     WeightingFunction weightingFunc(cart(0.0, 0.0, 1.0), width, height);
-    actual = weightingFunc(point);
+    actual = weightingFunc(point.transpose());
     REQUIRE(actual == Approx(expected));
     // Swapped
     point = cart(0.0, azimuth, 1.0);
     WeightingFunction weightingFuncSwap(cart(0.0, 0.0, 1.0), height, width);
-    actual = weightingFuncSwap(point);
+    actual = weightingFuncSwap(point.transpose());
     REQUIRE(actual == Approx(expected));
   }
 }
@@ -132,7 +126,9 @@ TEST_CASE("test_weight_func") {
 TEST_CASE("test_pv") {
   Layout layout = getLayout("9+10+3").withoutLfe();
   std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
-  PolarExtentPanner extentPanner(psp);
+  PolarExtentPanner extentPanner(psp,
+                                 boost::make_unique<SpreadingPanner>(
+                                     psp, PolarExtentPanner::nRowsDefault));
 
   REQUIRE(extentPanner.calcPvSpread(cart(0.0, 0.0, 1.0), 0.0, 0.0) ==
           psp->handle(cart(0.0, 0.0, 1.0)).get());
@@ -151,5 +147,54 @@ TEST_CASE("test_pv") {
         spread_pv.transpose() * toPositionsMatrix(layout.positions());
     vv /= vv.norm();
     REQUIRE(vv.isApprox(pos, tol));
+  }
+}
+
+TEST_CASE("reference_weight") {
+  for (size_t i = 0; i < 1000; i++) {
+    Eigen::Vector3d pos = Eigen::Vector3d::Random();
+    pos.normalize();
+    Eigen::Vector2d size = (Eigen::Vector2d::Random().array() + 1) * 180;
+    double width = size(0);
+    double height = size(1);
+
+    INFO("size " << width << " " << height);
+    INFO("pos " << pos.transpose());
+
+    WeightingFunction wf(pos, width, height);
+    reference::WeightingFunction wf_reference(pos, width, height);
+
+    for (size_t i = 0; i < 500; i++) {
+      Eigen::Vector3d sample_pos = Eigen::Vector3d::Random();
+      sample_pos.normalize();
+      double weight = wf(sample_pos.transpose());
+      double weight_reference = wf_reference(sample_pos.transpose());
+      CHECK(weight == Approx(weight_reference));
+    }
+  }
+}
+
+TEST_CASE("reference") {
+  Layout layout = getLayout("9+10+3").withoutLfe();
+  std::shared_ptr<PointSourcePanner> psp = configurePolarPanner(layout);
+  PolarExtentPanner extentPanner(psp,
+                                 boost::make_unique<SpreadingPanner>(
+                                     psp, PolarExtentPanner::nRowsDefault));
+  reference::PolarExtentPanner extentPannerReference(psp);
+
+  for (size_t i = 0; i < 1000; i++) {
+    Eigen::Vector3d pos = Eigen::Vector3d::Random();
+    pos.normalize();
+    Eigen::Vector2d size = (Eigen::Vector2d::Random().array() + 1) * 180;
+    double width = size(0);
+    double height = size(1);
+    Eigen::VectorXd spread_pv = extentPanner.calcPvSpread(pos, width, height);
+    Eigen::VectorXd spread_pv_reference =
+        extentPannerReference.calcPvSpread(pos, width, height);
+
+    INFO("size " << width << " " << height);
+    INFO("spread_pv " << spread_pv.transpose());
+    INFO("spread_pv_reference " << spread_pv_reference.transpose());
+    CHECK(spread_pv.isApprox(spread_pv_reference, 1e-6));
   }
 }

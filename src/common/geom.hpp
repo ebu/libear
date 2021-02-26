@@ -1,17 +1,20 @@
 #pragma once
 #include <Eigen/Core>
 #include <boost/math/constants/constants.hpp>
+#include <type_traits>
 #include "ear/common_types.hpp"
 #include "ear/metadata.hpp"
 
 namespace ear {
 
-  template <typename T>
+  template <typename T, typename std::enable_if<
+                            std::is_floating_point<T>::value, int>::type = 0>
   inline T radians(T d) {
     return d * static_cast<T>(boost::math::constants::pi<double>() / 180.0);
   }
 
-  template <typename T>
+  template <typename T, typename std::enable_if<
+                            std::is_floating_point<T>::value, int>::type = 0>
   inline T degrees(T r) {
     return r * static_cast<T>(180.0 / boost::math::constants::pi<double>());
   }

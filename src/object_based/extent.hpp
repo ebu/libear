@@ -21,16 +21,43 @@ namespace ear {
    */
   double extentMod(double extent, double distance);
 
+  /// calculates the extent weight for a given angle, in terms of the sin or
+  /// cos of that angle
+  class AngleToWeight {
+   public:
+    AngleToWeight();
+    /// angles < start_angle yield 1.0
+    /// angles > end_angle yield 0.0
+    /// other angles are interpolated
+    AngleToWeight(double start_angle, double end_angle);
+
+    double from_cos(double cos_angle) const;
+    double from_sin(double sin_angle) const;
+
+    // is an angle inside or outside the extent shape?
+    // these are here to allow them to be inlined in HTM
+    bool inside_from_cos(double cos_angle) const {
+      return cos_angle >= cos_start_angle;
+    }
+    bool outside_from_cos(double cos_angle) const {
+      return cos_angle <= cos_end_angle;
+    }
+    bool inside_from_sin(double sin_angle) const {
+      return sin_angle <= sin_start_angle;
+    }
+    bool outside_from_sin(double sin_angle) const {
+      return sin_angle >= sin_end_angle;
+    }
+
+   private:
+    double cos_start_angle, cos_end_angle;
+    double sin_start_angle, sin_end_angle;
+    double m, c;
+  };
+
   /** @brief Calculate basis vectors that rotate (0, 1, 0)
      onto source_pos. */
   Eigen::Matrix3d calcBasis(Eigen::Vector3d position);
-
-  /** @brief Polar to Cartesian in radians with no distance, in a given basis.*/
-  Eigen::Vector3d cartOnBasis(Eigen::Matrix3d basis, double azimuth,
-                              double elevation);
-
-  std::pair<double, double> azimuthElevationOnBasis(
-      Eigen::Matrix3d basis, Eigen::RowVector3d position);
 
   /** @brief Weighting function for spread sources.
    *
@@ -64,22 +91,46 @@ namespace ear {
     WeightingFunction(Eigen::Vector3d position, double width, double height);
 
     /** @brief Calculate weight for position */
-    double operator()(Eigen::Vector3d position) const;
+    double operator()(
+        const Eigen::Ref<const Eigen::RowVector3d> &position) const;
 
    private:
+    // pointer to the actual weighting function, one of the static weight_*
+    // below
+    double (*weight_cb)(const WeightingFunction &self,
+                        const Eigen::Ref<const Eigen::RowVector3d> &position);
+
+    static double weight_circle(
+        const WeightingFunction &self,
+        const Eigen::Ref<const Eigen::RowVector3d> &position);
+    static double weight_stadium(
+        const WeightingFunction &self,
+        const Eigen::Ref<const Eigen::RowVector3d> &position);
+
     const double _fadeWidth = 10.0;
     double _width;
     double _height;
-    double _circleRadius;
+    // angle of the circle centres from the source position
+    double circlePos() const { return _width - _height; }
+    double circleRadius() const { return _height; }
     Eigen::Matrix3d _flippedBasis;
-    double _circlePos;
-    Eigen::Matrix<double, 3, 2> _circlePositions;
+
+    // xy position of the right circle centre, used to measure the distance via
+    // dot product
+    Eigen::Vector2d right_circle_centre;
+    // vector in xy to test if a point is between the circles
+    Eigen::Vector2d circle_test;
+
+    AngleToWeight angle_to_weight;
+
+    // is the extent shape circular? this simplifies some logic
+    bool is_circular;
+
+    friend class WeightingFunctionEdges;
   };
 
-  class SpreadingPanner {
+  class SpreadingPannerBase {
    public:
-    SpreadingPanner(std::shared_ptr<PointSourcePanner> psp, int nRows);
-
     /** @brief Panning values for a given weighting function.
      *
      * @param weightFunc function from Cartesian position to weight in range
@@ -87,9 +138,12 @@ namespace ear {
      *
      * @return panning value for each speaker.
      */
-    Eigen::VectorXd panningValuesForWeight(const WeightingFunction& weightFunc);
+    virtual Eigen::VectorXd panningValuesForWeight(
+        const WeightingFunction &weightFunc) const = 0;
 
-   private:
+    virtual ~SpreadingPannerBase() {}
+
+   protected:
     /** @brief Generate points spread evenly on the sphere.
      *
      * Based on
@@ -100,18 +154,32 @@ namespace ear {
      *
      * @returns cartesian array.
      */
-    Eigen::MatrixXd _generatePanningPositionsEven();
-    Eigen::MatrixXd _generatePanningPositionsResults();
+    static Eigen::MatrixXd _generatePanningPositionsEven(int nRows);
+    static Eigen::MatrixXd _generatePanningPositionsResults(
+        std::shared_ptr<PointSourcePanner> psp,
+        const Eigen::Ref<const Eigen::MatrixXd> &positions);
+  };
 
+  class SpreadingPanner : public SpreadingPannerBase {
+   public:
+    SpreadingPanner(std::shared_ptr<PointSourcePanner> psp, int nRows);
+    Eigen::VectorXd panningValuesForWeight(
+        const WeightingFunction &weightFunc) const override;
+
+   private:
     std::shared_ptr<PointSourcePanner> _psp;
-    int _nRows;
-    Eigen::MatrixXd _panningPositions;
+    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> _panningPositions;
     Eigen::MatrixXd _panningPositionsResults;
   };
 
   class PolarExtentPanner : public ExtentPanner {
    public:
+    /// construct with the default spreading panner
     PolarExtentPanner(std::shared_ptr<PointSourcePanner> psp);
+
+    /// construct with the given spreading panner, mostly useful for testing
+    PolarExtentPanner(std::shared_ptr<PointSourcePanner> psp,
+                      std::unique_ptr<SpreadingPannerBase> spreadingPanner);
 
     /** @brief Calculate loudspeaker gains given position and extent parameters.
      *
@@ -123,19 +191,20 @@ namespace ear {
      * @returns loudspeaker gains for each channel
      */
     Eigen::VectorXd handle(Eigen::Vector3d position, double width,
-                           double height, double depth);
+                           double height, double depth) const;
 
     /** @brief Calculate the speaker panning values for the position, width, and
      * height of a source; this just deals with the positioning and spreading.
      */
     Eigen::VectorXd calcPvSpread(Eigen::Vector3d position, double width,
-                                 double height);
+                                 double height) const;
+
+    static const int nRowsDefault;
 
    private:
-    const int _nRows = 37;  // 5 degrees per row
     const double _fadeWidth = 10.0;  // degrees
     std::shared_ptr<PointSourcePanner> _psp;
-    SpreadingPanner _spreadingPanner;
+    std::unique_ptr<SpreadingPannerBase> _spreadingPanner;
   };
 
   class CartesianExtentPanner : public ExtentPanner {};
