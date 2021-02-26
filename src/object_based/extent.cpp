@@ -62,6 +62,7 @@ namespace ear {
         c(-m * end_angle) {
     ear_assert(start_angle >= 0, "start angle should be +ve");
     ear_assert(end_angle >= 0, "end angle should be +ve");
+    ear_assert(end_angle > start_angle, "end angle should be > start angle");
   }
 
   double AngleToWeight::from_cos(double cos_angle) const {
