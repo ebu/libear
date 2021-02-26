@@ -144,7 +144,7 @@ namespace ear {
 
   double WeightingFunction::weight_circle(
       const WeightingFunction &self,
-      const Eigen::Ref<Eigen::RowVector3d> &position) {
+      const Eigen::Ref<const Eigen::RowVector3d> &position) {
     // simplified dot product assuming that circle_centre is {0, 1, 0}
     double dot = self._flippedBasis.row(1).dot(position);
     return self.angle_to_weight.from_cos(dot);
@@ -152,7 +152,7 @@ namespace ear {
 
   double WeightingFunction::weight_stadium(
       const WeightingFunction &self,
-      const Eigen::Ref<Eigen::RowVector3d> &position) {
+      const Eigen::Ref<const Eigen::RowVector3d> &position) {
     Eigen::RowVector3d position_t = self._flippedBasis * position.transpose();
 
     Eigen::RowVector3d position_t_right = position_t;
@@ -169,7 +169,7 @@ namespace ear {
   }
 
   double WeightingFunction::operator()(
-      const Eigen::Ref<Eigen::RowVector3d> &position) const {
+      const Eigen::Ref<const Eigen::RowVector3d> &position) const {
     return weight_cb(*this, position);
   }
 

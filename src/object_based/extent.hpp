@@ -91,19 +91,21 @@ namespace ear {
     WeightingFunction(Eigen::Vector3d position, double width, double height);
 
     /** @brief Calculate weight for position */
-    double operator()(const Eigen::Ref<Eigen::RowVector3d> &position) const;
+    double operator()(
+        const Eigen::Ref<const Eigen::RowVector3d> &position) const;
 
    private:
     // pointer to the actual weighting function, one of the static weight_*
     // below
     double (*weight_cb)(const WeightingFunction &self,
-                        const Eigen::Ref<Eigen::RowVector3d> &position);
+                        const Eigen::Ref<const Eigen::RowVector3d> &position);
 
-    static double weight_circle(const WeightingFunction &self,
-                                const Eigen::Ref<Eigen::RowVector3d> &position);
+    static double weight_circle(
+        const WeightingFunction &self,
+        const Eigen::Ref<const Eigen::RowVector3d> &position);
     static double weight_stadium(
         const WeightingFunction &self,
-        const Eigen::Ref<Eigen::RowVector3d> &position);
+        const Eigen::Ref<const Eigen::RowVector3d> &position);
 
     const double _fadeWidth = 10.0;
     double _width;
