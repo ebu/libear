@@ -14,14 +14,14 @@
 using namespace ear;
 
 TEST_CASE("test_AngleToWeight") {
-  for (int start_angle = 0; start_angle <= 180; start_angle += 2) {
-    int end_angle = start_angle + 10;
+  for (double start_angle = 0.0; start_angle <= 180.0; start_angle += 2.0) {
+    double end_angle = start_angle + 10.0;
     AngleToWeight atw(radians(start_angle), radians(end_angle));
 
     Eigen::Vector2d interp_from{radians(start_angle), radians(end_angle)};
-    Eigen::Vector2d interp_to{1, 0};
+    Eigen::Vector2d interp_to{1.0, 0.0};
 
-    for (int angle = 0; angle < 180; angle++) {
+    for (double angle = 0.0; angle < 180.0; angle++) {
       double angle_rad = radians(angle);
 
       CHECK(atw.from_cos(std::cos(angle_rad)) ==
