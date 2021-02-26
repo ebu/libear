@@ -309,7 +309,7 @@ namespace ear {
   }
 
   Eigen::VectorXd SpreadingPannerHTM::panningValuesForWeight(
-      const WeightingFunction &weightFunc) {
+      const WeightingFunction &weightFunc) const {
     point_cache.clear();
     inside_edge_cache.clear();
     outside_edge_cache.clear();
@@ -326,8 +326,9 @@ namespace ear {
 
   void SpreadingPannerHTM::integrate(const WeightingFunction &wf,
                                      const WeightingFunctionEdges &edges,
-                                     size_t tri_id, Eigen::VectorXd &pvs) {
-    HTM::CTri &tri = htm.tris[tri_id];
+                                     size_t tri_id,
+                                     Eigen::VectorXd &pvs) const {
+    const HTM::CTri &tri = htm.tris[tri_id];
     bool inside, outside;
     std::tie(inside, outside) = edges.spherical_tri_inside_outside(
         htm, point_cache, inside_edge_cache, outside_edge_cache, tri_id);

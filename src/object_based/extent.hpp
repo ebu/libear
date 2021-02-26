@@ -139,7 +139,7 @@ namespace ear {
      * @return panning value for each speaker.
      */
     virtual Eigen::VectorXd panningValuesForWeight(
-        const WeightingFunction &weightFunc) = 0;
+        const WeightingFunction &weightFunc) const = 0;
 
     virtual ~SpreadingPannerBase() {}
 
@@ -164,7 +164,7 @@ namespace ear {
    public:
     SpreadingPanner(std::shared_ptr<PointSourcePanner> psp, int nRows);
     Eigen::VectorXd panningValuesForWeight(
-        const WeightingFunction &weightFunc) override;
+        const WeightingFunction &weightFunc) const override;
 
    private:
     std::shared_ptr<PointSourcePanner> _psp;
@@ -191,13 +191,13 @@ namespace ear {
      * @returns loudspeaker gains for each channel
      */
     Eigen::VectorXd handle(Eigen::Vector3d position, double width,
-                           double height, double depth);
+                           double height, double depth) const;
 
     /** @brief Calculate the speaker panning values for the position, width, and
      * height of a source; this just deals with the positioning and spreading.
      */
     Eigen::VectorXd calcPvSpread(Eigen::Vector3d position, double width,
-                                 double height);
+                                 double height) const;
 
     static const int nRowsDefault;
 

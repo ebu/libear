@@ -172,7 +172,7 @@ namespace ear {
     SpreadingPannerHTM(std::shared_ptr<PointSourcePanner> psp, int nRows,
                        int levels = 3);
     Eigen::VectorXd panningValuesForWeight(
-        const WeightingFunction &weightFunc) override;
+        const WeightingFunction &weightFunc) const override;
 
    private:
     void assign_points_to_tris(
@@ -182,7 +182,7 @@ namespace ear {
 
     void integrate(const WeightingFunction &wf,
                    const WeightingFunctionEdges &edges, size_t tri_id,
-                   Eigen::VectorXd &pvs);
+                   Eigen::VectorXd &pvs) const;
 
     HTM htm;
 
@@ -197,8 +197,8 @@ namespace ear {
     // assigning points to triangles
     std::vector<std::pair<size_t, size_t>> tri_points_ptrs;
 
-    InOutCache point_cache;
-    BoolCache inside_edge_cache;
-    BoolCache outside_edge_cache;
+    mutable InOutCache point_cache;
+    mutable BoolCache inside_edge_cache;
+    mutable BoolCache outside_edge_cache;
   };
 }  // namespace ear

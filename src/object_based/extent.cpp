@@ -181,7 +181,7 @@ namespace ear {
             _generatePanningPositionsResults(psp, _panningPositions)) {}
 
   Eigen::VectorXd SpreadingPanner::panningValuesForWeight(
-      const WeightingFunction &weightFunc) {
+      const WeightingFunction &weightFunc) const {
     Eigen::VectorXd totalPv =
         Eigen::VectorXd::Zero(_panningPositionsResults.rows());
     for (int i = 0; i < _panningPositions.rows(); ++i) {
@@ -251,7 +251,8 @@ namespace ear {
       : PolarExtentPanner(psp, make_default_spreading_panner(psp)) {}
 
   Eigen::VectorXd PolarExtentPanner::calcPvSpread(Eigen::Vector3d position,
-                                                  double width, double height) {
+                                                  double width,
+                                                  double height) const {
     // When calculating the spread panning values the width and height are
     // set to at least fade_width. For sizes where any of the dimensions is
     // less than this, interpolate linearly between the point and spread
@@ -279,7 +280,7 @@ namespace ear {
 
   Eigen::VectorXd PolarExtentPanner::handle(Eigen::Vector3d position,
                                             double width, double height,
-                                            double depth) {
+                                            double depth) const {
     double distance = position.norm();
 
     if (depth != 0.0) {
