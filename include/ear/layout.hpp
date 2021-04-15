@@ -71,7 +71,7 @@ namespace ear {
    public:
     Layout(std::string name = "",
            std::vector<Channel> channels = std::vector<Channel>(),
-           boost::optional<Screen> screen = boost::none);
+           boost::optional<Screen> screen = getDefaultScreen());
 
     std::string name() const;
     std::vector<Channel>& channels();
