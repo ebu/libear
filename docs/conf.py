@@ -62,7 +62,7 @@ highlight_language = "cpp"
 
 templates_path = ["_templates"]
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md", "env"]
 
 # html_static_path = ["_static"]
 
