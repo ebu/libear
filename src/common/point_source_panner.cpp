@@ -35,17 +35,17 @@ namespace ear {
 
   Triplet::Triplet(Eigen::Vector3i outputChannels, Eigen::Matrix3d positions)
       : RegionHandler(outputChannels, positions) {
-    _basis = _positions.cast<double>().inverse();
+    _basis = _positions.inverse();
   };
 
   boost::optional<Eigen::VectorXd> Triplet::handle(
       Eigen::Vector3d position) const {
-    Eigen::VectorXd pv = position.cast<double>().transpose() * _basis;
+    Eigen::VectorXd pv = position.transpose() * _basis;
     double epsilon = -1e-11;
     if (pv(0) >= epsilon && pv(1) >= epsilon && pv(2) >= epsilon) {
       pv /= pv.norm();
       pv.cwiseMin(0.0).cwiseMax(1.0);  // make sure all values are positive
-      return pv.cast<double>().eval();
+      return pv;
     }
     return boost::none;
   }
