@@ -44,8 +44,7 @@ namespace ear {
     double epsilon = -1e-11;
     if (pv(0) >= epsilon && pv(1) >= epsilon && pv(2) >= epsilon) {
       pv /= pv.norm();
-      pv.cwiseMin(0.0).cwiseMax(1.0);  // make sure all values are positive
-      return pv;
+      return pv.cwiseMax(0.0).cwiseMin(1.0).eval();
     }
     return boost::none;
   }

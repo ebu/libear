@@ -348,7 +348,7 @@ TEST_CASE("test_all_layouts") {
           Eigen::VectorXd position = cartT(az, el, 1.0);
           auto pv = psp->handle(position);
           REQUIRE(pv != boost::none);
-          REQUIRE((pv->array() >= 0.0).any());
+          REQUIRE((pv->array() >= 0.0).all());
 
           // check that the gains are normalised
 
