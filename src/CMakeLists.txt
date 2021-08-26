@@ -1,14 +1,10 @@
 # --- ear library ---
 
-add_custom_command(
-  OUTPUT ${PROJECT_BINARY_DIR}/resources.hpp
-  COMMAND libear_resource_embedder Design_5200_100_random.dat > ${PROJECT_BINARY_DIR}/resources.hpp
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/resources
-  DEPENDS libear_resource_embedder
-      ${PROJECT_SOURCE_DIR}/resources/Design_5200_100_random.dat
-  COMMENT "Running resource embedder."
-  VERBATIM
-)
+include(embed_resource)
+embed_resource(
+  NAMESPACE ear
+  BASE_NAME resources
+  RESOURCE_FILES "${PROJECT_SOURCE_DIR}/resources/Design_5200_100_random.dat")
 
 add_library(ear
   bs2051.cpp
@@ -33,12 +29,14 @@ add_library(ear
   object_based/extent.cpp
   object_based/gain_calculator_objects.cpp
   warnings.cpp
-  ${PROJECT_BINARY_DIR}/resources.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/resources.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
 )
 
 target_include_directories(ear
   PRIVATE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/submodules/kissfft>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # resources.hpp
   PUBLIC
   # Headers used from source/build location:
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

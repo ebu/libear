@@ -69,7 +69,6 @@ configure_file(
 ############################################################
 add_subdirectory(submodules)
 add_subdirectory(src)
-add_subdirectory(tools)
 if(EAR_EXAMPLES)
   add_subdirectory(examples)
 endif()
