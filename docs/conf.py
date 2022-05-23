@@ -26,6 +26,7 @@ INPUT += ../include/ear/warnings.hpp
 INPUT += ../include/ear/layout.hpp
 INPUT += ../include/ear/screen.hpp
 INPUT += ../include/ear/common_types.hpp
+INPUT += ../include/ear/conversion.hpp
 INPUT += ../include/ear/decorrelate.hpp
 INPUT += ../include/ear/fft.hpp
 INPUT += ../include/ear/dsp/dsp.hpp

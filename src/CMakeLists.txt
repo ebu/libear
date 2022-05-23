@@ -13,6 +13,7 @@ add_library(ear
   common/facets.cpp
   common/geom.cpp
   common/point_source_panner.cpp
+  conversion.cpp
   decorrelate.cpp
   direct_speakers/gain_calculator_direct_speakers.cpp
   direct_speakers/mapping_rules.cpp

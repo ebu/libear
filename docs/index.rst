@@ -85,6 +85,7 @@ License
   calculating_gains
   dsp
   loudspeaker_layouts
+  conversion
   error_handling
   api/library_root
   changelog
