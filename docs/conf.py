@@ -46,6 +46,9 @@ JAVADOC_AUTOBRIEF = YES
 EXTRACT_ALL = YES
 
 STRIP_CODE_COMMENTS = NO
+
+ALIASES += "rst=\\verbatim embed:rst:leading-asterisk"
+ALIASES += "endrst=\\endverbatim"
 """
 exhale_args = {
     "containmentFolder": "./api",
