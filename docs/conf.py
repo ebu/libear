@@ -6,7 +6,9 @@ copyright = "2019, libear authors"
 author = "EBU"
 release = "0.9"
 
-extensions = ["breathe", "exhale", "m2r2", "sphinxcontrib.bibtex"]
+extensions = ["breathe", "exhale", "m2r2", "sphinxcontrib.bibtex", "sphinx.ext.intersphinx"]
+
+intersphinx_mapping = {'ear': ('https://ear.readthedocs.io/en/latest/', None)}
 
 # Setup the breathe extension
 breathe_projects = {"libear": "./_build/doxyoutput/xml"}
