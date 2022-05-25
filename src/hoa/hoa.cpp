@@ -1,5 +1,4 @@
 #include "hoa.hpp"
-#include <iostream>
 #include "ear/helpers/assert.hpp"
 #include "resources.hpp"
 
