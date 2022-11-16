@@ -103,6 +103,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
             -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          doBuildArgs: -v
 
       - name: 'print ccache stats'
         run: ccache -s
