@@ -43,7 +43,7 @@ jobs:
           vcpkgArguments: 'boost-algorithm boost-math boost-optional boost-smart-ptr boost-variant'
           vcpkgTriplet: '${{ matrix.triplet }}'
           vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
-          vcpkgGitCommitId: '5568f110b509a9fd90711978a7cb76bae75bb092'
+          vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
 
       - name: 'Install ubuntu dependencies'
         if: matrix.os == 'ubuntu-latest'
