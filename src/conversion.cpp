@@ -151,11 +151,12 @@ namespace ear {
 
     PolarPosition pointCartToPolar(const CartesianPosition &pos) {
       double eps = 1e-10;
-      if (std::abs(pos.X) < eps && std::abs(pos.Y) < eps)
+      if (std::abs(pos.X) < eps && std::abs(pos.Y) < eps) {
         if (std::abs(pos.Z) < eps)
           return {0.0, 0.0, 0.0};
         else
           return {0.0, sign(pos.Z) * 90.0, std::abs(pos.Z)};
+      }
 
       const Sector &sector = find_cart_sector(azimuth({pos.X, pos.Y, 0.0}));
 
