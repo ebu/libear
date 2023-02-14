@@ -47,6 +47,7 @@ target_include_directories(ear
 )
 
 target_link_libraries(ear PUBLIC Boost::boost ${CMAKE_DL_LIBS})
+target_include_directories(ear PRIVATE $<TARGET_PROPERTY:xsimd,INTERFACE_INCLUDE_DIRECTORIES>)
 # Only use include directory of Eigen3 target
 # as otherwise Eigen3 needs to be installed and found when linking to a
 # static version of libear, even though it's an INTERFACE target with PRIVATE linking

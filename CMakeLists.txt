@@ -37,6 +37,7 @@ option(EAR_UNIT_TESTS "Build units tests" ${IS_ROOT_PROJECT})
 option(EAR_EXAMPLES "Build examples" ${IS_ROOT_PROJECT})
 option(EAR_PACKAGE_AND_INSTALL "Package and install libear" ${IS_ROOT_PROJECT})
 option(EAR_USE_INTERNAL_EIGEN "should we use our own version of Eigen, or find one with find_package?" TRUE)
+option(EAR_USE_INTERNAL_XSIMD "should we use our own version of xsimd, or find one with find_package?" TRUE)
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
@@ -60,6 +61,10 @@ if(EAR_USE_INTERNAL_EIGEN)
     include(${PROJECT_SOURCE_DIR}/submodules/eigen3.cmake)
 else()
     find_package(Eigen3 REQUIRED)
+endif()
+
+if(NOT EAR_USE_INTERNAL_XSIMD)
+    find_package(xsimd REQUIRED)
 endif()
 
 ############################################################
@@ -94,6 +99,7 @@ add_feature_info("Internal Tests" ${EAR_INTERNAL_TESTS}
 add_feature_info(EAR_EXAMPLES ${EAR_EXAMPLES} "Build examples")
 add_feature_info(EAR_PACKAGE_AND_INSTALL ${EAR_PACKAGE_AND_INSTALL} "Package and install libear")
 add_feature_info(EAR_USE_INTERNAL_EIGEN ${EAR_USE_INTERNAL_EIGEN} "use internal version of Eigen")
+add_feature_info(EAR_USE_INTERNAL_XSIMD ${EAR_USE_INTERNAL_XSIMD} "use internal version of xsimd")
 feature_summary(WHAT ALL)
 
 if(EAR_PACKAGE_AND_INSTALL)
