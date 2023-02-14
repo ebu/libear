@@ -23,6 +23,7 @@ namespace ear {
     // static data
 
     struct Sector {
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       double polar_start_az;  // or left
       double polar_end_az;  // or right
       double cart_start_az;
@@ -34,8 +35,10 @@ namespace ear {
       Eigen::Matrix2d m;
     };
 
-    static std::vector<Sector> make_sectors() {
-      std::vector<Sector> out;
+    using Sectors = std::vector<Sector, Eigen::aligned_allocator<Sector>>;
+
+    static Sectors make_sectors() {
+      Sectors out;
 
       using MappintPoint = std::pair<double, Eigen::Vector3d>;
 
@@ -67,7 +70,7 @@ namespace ear {
       return out;
     }
 
-    static const std::vector<Sector> sectors = make_sectors();
+    static const Sectors sectors = make_sectors();
     static const double el_top = 30;
     static const double el_top_tilde = 45;
 
