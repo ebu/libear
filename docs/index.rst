@@ -3,7 +3,7 @@
 libear --- Recommendation ITU-R BS.2127 core library
 ====================================================
 
-*libear* is a C++11 library to render ADM content according to :cite:`bs2127`.
+*libear* is a C++14 library to render ADM content according to :cite:`bs2127`.
 It is not a complete application, but provides components to calculate gains
 and apply them to audio, for embedding into applications which need to render
 ADM content.

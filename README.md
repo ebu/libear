@@ -6,7 +6,7 @@
 [![Documentation Status](https://readthedocs.org/projects/libear/badge/?version=latest)](https://libear.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/ebu/libear/branch/master/graph/badge.svg)](https://codecov.io/gh/ebu/libear)
 
-*libear* is a C++11 library to render ADM content according to [Recommendation
+*libear* is a C++14 library to render ADM content according to [Recommendation
 ITU-R BS.2127](https://www.itu.int/rec/R-REC-BS.2127). It is not a complete
 application, but provides components to calculate gains and apply them to
 audio, for embedding into applications which need to render ADM content.
@@ -18,7 +18,7 @@ started.
 
 ### Dependencies
 
-  - compiler with C++11 support
+  - compiler with C++14 support
   - Boost header libraries (version 1.57 or later)
       - Boost.Optional
       - Boost.Variant

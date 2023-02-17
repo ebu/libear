@@ -4,7 +4,7 @@ Installation
 Dependencies
 ------------
 
--  compiler with C++11 support
+-  compiler with C++14 support
 -  Boost header libraries (version 1.57 or later)
 
    -  Boost.Optional
