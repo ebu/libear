@@ -217,13 +217,14 @@ namespace ear {
                                SampleIndex end, const Point &start_point,
                                const Point &end_point) {
         float scale = 1.0f / (end - start);
-        for (SampleIndex i = range_start; i < range_end; i++) {
-          float p = (float)((block_start + i) - start) * scale;
+        
+        for (size_t channel = 0; channel < start_point.size(); channel++) {
+          float s = start_point[channel];
+          float e = end_point[channel];
 
-          for (size_t channel = 0; channel < start_point.size(); channel++) {
-            float gain =
-                (1.0f - p) * start_point[channel] + p * end_point[channel];
-
+          for (SampleIndex i = range_start; i < range_end; i++) {
+            float p = (float)((block_start + i) - start) * scale;
+            float gain = (1.0f - p) * s + p * e;
             out[channel][i] = in[0][i] * gain;
           }
         }
@@ -232,8 +233,8 @@ namespace ear {
       static void apply_constant(const float *const *in, float *const *out,
                                  SampleIndex range_start, SampleIndex range_end,
                                  const Point &point) {
-        for (SampleIndex i = range_start; i < range_end; i++) {
-          for (size_t channel = 0; channel < point.size(); channel++) {
+        for (size_t channel = 0; channel < point.size(); channel++) {
+          for (SampleIndex i = range_start; i < range_end; i++) {
             out[channel][i] = in[0][i] * point[channel];
           }
         }
@@ -252,20 +253,24 @@ namespace ear {
                                SampleIndex end, const Point &start_point,
                                const Point &end_point) {
         float scale = 1.0f / (end - start);
-        for (SampleIndex i = range_start; i < range_end; i++) {
-          for (size_t out_channel = 0;
-               out_channel < (start_point.size() ? start_point[0].size() : 0);
-               out_channel++) {
+        for (size_t out_channel = 0;
+            out_channel < (start_point.size() ? start_point[0].size() : 0);
+            out_channel++) {
+          for (SampleIndex i = range_start; i < range_end; i++) {
             out[out_channel][i] = 0.0;
           }
+        }
 
-          float p = (float)((block_start + i) - start) * scale;
-          for (size_t in_channel = 0; in_channel < start_point.size();
-               in_channel++) {
-            for (size_t out_channel = 0;
-                 out_channel < start_point[in_channel].size(); out_channel++) {
-              float gain = (1.0f - p) * start_point[in_channel][out_channel] +
-                           p * end_point[in_channel][out_channel];
+        for (size_t in_channel = 0; in_channel < start_point.size();
+            in_channel++) {
+          for (size_t out_channel = 0;
+              out_channel < start_point[in_channel].size(); out_channel++) {
+            float s = start_point[in_channel][out_channel];
+            float e = end_point[in_channel][out_channel];
+
+            for (SampleIndex i = range_start; i < range_end; i++) {
+              float p = (float)((block_start + i) - start) * scale;
+              float gain = (1.0f - p) * s + p * e;
               out[out_channel][i] += in[in_channel][i] * gain;
             }
           }
@@ -275,15 +280,17 @@ namespace ear {
       static void apply_constant(const float *const *in, float *const *out,
                                  SampleIndex range_start, SampleIndex range_end,
                                  const Point &point) {
-        for (SampleIndex i = range_start; i < range_end; i++) {
-          for (size_t out_channel = 0;
-               out_channel < (point.size() ? point[0].size() : 0);
-               out_channel++) {
+        for (size_t out_channel = 0;
+              out_channel < (point.size() ? point[0].size() : 0);
+              out_channel++) {
+          for (SampleIndex i = range_start; i < range_end; i++) {
             out[out_channel][i] = 0.0;
           }
-          for (size_t in_channel = 0; in_channel < point.size(); in_channel++) {
-            for (size_t out_channel = 0; out_channel < point[in_channel].size();
-                 out_channel++) {
+        }
+        for (size_t in_channel = 0; in_channel < point.size(); in_channel++) {
+          for (size_t out_channel = 0; out_channel < point[in_channel].size();
+                out_channel++) {
+            for (SampleIndex i = range_start; i < range_end; i++) {
               out[out_channel][i] +=
                   in[in_channel][i] * point[in_channel][out_channel];
             }
