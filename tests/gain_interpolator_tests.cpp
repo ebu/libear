@@ -255,3 +255,42 @@ TEST_CASE("matrix") {
 
   CHECK_THAT(output, IsApprox(expected_output));
 }
+
+#ifdef CATCH_CONFIG_ENABLE_BENCHMARKING
+TEST_CASE("matrix_benchmark", "[.benchmark]") {
+  const size_t in_channels = 32;
+  const size_t out_channels = 24;
+  const size_t n_samples = 1024;
+
+  Eigen::MatrixXf input = Eigen::MatrixXf::Random(n_samples, in_channels);
+  Eigen::MatrixXf output = Eigen::MatrixXf::Zero(n_samples, in_channels);
+
+  PtrAdapterConst in_p(input.cols());
+  in_p.set_eigen(input);
+
+  PtrAdapter out_p(output.cols());
+  out_p.set_eigen(output);
+
+  GainInterpolator<LinearInterpMatrix> interp;
+
+  std::default_random_engine generator;
+  std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+  for (SampleIndex time = 100; (size_t)time < n_samples; time += 100) {
+    std::vector<std::vector<float>> point;
+    for (size_t in_i = 0; in_i < in_channels; in_i++) {
+      std::vector<float> vec(out_channels);
+      for (size_t out_i = 0; out_i < out_channels; out_i++) {
+        vec[out_i] = distribution(generator);
+      }
+      point.push_back(std::move(vec));
+    }
+
+    interp.interp_points.emplace_back(time, std::move(point));
+  }
+
+  BENCHMARK("process") {
+    interp.process(0, input.rows(), in_p.ptrs(), out_p.ptrs());
+  };
+}
+#endif
