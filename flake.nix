@@ -6,7 +6,11 @@
     flake-utils.lib.eachDefaultSystem
       (system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs {
+            system = system;
+            config.allowUnsupportedSystem = true; # for eigen wasm
+          };
+          pkgs_wasm = pkgs.pkgsCross.wasi32;
 
           devtools = [
             pkgs.clang-tools
@@ -33,6 +37,30 @@
             nativeBuildInputs = attrs.nativeBuildInputs ++ devtools;
           });
           devShells.default = devShells.libear;
+
+          # wasm versions of packages
+
+          packages.xsimd_wasm = pkgs_wasm.xsimd.overrideAttrs {
+            # this should be an overlay
+            version = pkgs.xsimd.version;
+            src = pkgs.xsimd.src;
+          };
+          packages.libear_wasm = (pkgs_wasm.callPackage ./nix/libear.nix {
+            src = ./.;
+            boost = pkgs.boost; # doesn't build for wasm, but we only use headers, so use system version
+            xsimd = packages.xsimd_wasm;
+          }).overrideAttrs (super: {
+            cmakeBuildType = "MinSizeRel";
+          });
+
+          devShells.libear_wasm = packages.libear_wasm.overrideAttrs (attrs: {
+            nativeBuildInputs = attrs.nativeBuildInputs ++ devtools ++ [
+              pkgs.wabt
+              pkgs.wasmtime
+              pkgs.nodejs
+              pkgs.nodePackages.prettier
+            ];
+          });
         }
       );
 }
