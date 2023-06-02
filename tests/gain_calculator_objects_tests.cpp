@@ -131,6 +131,8 @@ TEST_CASE("gain_value") {
   REQUIRE(gainMap.diffuse.size() == 0);
 }
 
+#ifndef EAR_NO_EXCEPTIONS
+
 TEST_CASE("not implemented") {
   auto layout = getLayout("4+7+0").withoutLfe();
   GainCalculatorObjectsTester gainCalc(layout);
@@ -167,3 +169,5 @@ TEST_CASE("not implemented") {
     REQUIRE_THROWS_AS(gainCalc.run(otm), not_implemented);
   }
 }
+
+#endif

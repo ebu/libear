@@ -24,20 +24,20 @@ namespace ear {
                                         OutputGainMat &direct,
                                         const WarningCB &warning_cb) {
     if (metadata.orders.size() != metadata.degrees.size())
-      throw invalid_argument("orders and degrees must be the same size");
+      ear_throw(invalid_argument("orders and degrees must be the same size"));
 
     for (size_t i = 0; i < metadata.orders.size(); i++) {
       if (metadata.orders[i] < 0)
-        throw invalid_argument("orders must not be negative");
+        ear_throw(invalid_argument("orders must not be negative"));
       if (std::abs(metadata.degrees[i]) > metadata.orders[i])
-        throw invalid_argument(
-            "magnitude of degree must not be greater than order");
+        ear_throw(invalid_argument(
+            "magnitude of degree must not be greater than order"));
     }
 
     auto norm_it = ADM_norm_types.find(metadata.normalization);
     if (norm_it == ADM_norm_types.end())
-      throw adm_error("unknown normalization type: '" + metadata.normalization +
-                      "'");
+      ear_throw(adm_error("unknown normalization type: '" +
+                          metadata.normalization + "'"));
 
     if (metadata.screenRef)
       warning_cb({Warning::Code::HOA_SCREENREF_NOT_IMPLEMENTED,

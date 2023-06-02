@@ -8,6 +8,7 @@ function(add_ear_test name)
     ear
     catch2
     Eigen3::Eigen
+    ear_handle_exceptions
   )
   target_include_directories(${name} PRIVATE
     ${PROJECT_SOURCE_DIR}/submodules

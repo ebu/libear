@@ -136,6 +136,14 @@ list(APPEND XSIMD_ARCHS xsimd::generic_for_dispatch)
 list(JOIN XSIMD_ARCHS "," XSIMD_ARCHS_STR)
 target_compile_definitions(ear PRIVATE "XSIMD_ARCHS=${XSIMD_ARCHS_STR}")
 
+if (EAR_NO_EXCEPTIONS)
+    target_compile_definitions(ear PUBLIC "EAR_NO_EXCEPTIONS")
+endif()
+# link executables to ear_handle_exceptions to support building without
+# exceptions; the comment at the top of exceptions.hpp explains how this works
+add_library(ear_handle_exceptions OBJECT handle_exceptions.cpp)
+target_link_libraries(ear_handle_exceptions PRIVATE ear)
+
 include(GenerateExportHeader)
 generate_export_header(ear
   EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/generated/export.hpp

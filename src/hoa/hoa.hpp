@@ -73,7 +73,7 @@ namespace ear {
         case NormType::FuMa:
           return norm_FuMa;
         default:
-          throw ear::internal_error("invalid value for norm_type");
+          ear_throw(ear::internal_error("invalid value for norm_type"));
       }
     }
 

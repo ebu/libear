@@ -14,7 +14,7 @@ namespace ear {
     std::pair<double, double> handleAzimuthElevation(
         double azimuth, double elevation, ScreenEdgeLock screenEdgeLock) {
       if (screenEdgeLock.horizontal || screenEdgeLock.vertical)
-        throw not_implemented("screenEdgeLock");
+        ear_throw(not_implemented("screenEdgeLock"));
 
       return std::make_pair(azimuth, elevation);
     }
@@ -22,7 +22,7 @@ namespace ear {
     std::tuple<double, double, double> handleVector(
         Eigen::Vector3d pos, ScreenEdgeLock screenEdgeLock) {
       if (screenEdgeLock.horizontal || screenEdgeLock.vertical)
-        throw not_implemented("screenEdgeLock");
+        ear_throw(not_implemented("screenEdgeLock"));
 
       return std::make_tuple(pos(0), pos(1), pos(2));
     }
