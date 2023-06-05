@@ -1,10 +1,9 @@
 # --- ear library ---
 
-include(embed_resource)
-embed_resource(
-  NAMESPACE ear
-  BASE_NAME resources
-  RESOURCE_FILES "${PROJECT_SOURCE_DIR}/resources/Design_5200_100_random.dat")
+include(generate_points_file)
+generate_points_file(
+  "${PROJECT_SOURCE_DIR}/resources/Design_5200_100_random.dat"
+  ${CMAKE_CURRENT_BINARY_DIR}/hoa_points_file.cpp)
 
 add_library(ear
   bs2051.cpp
@@ -32,14 +31,12 @@ add_library(ear
   object_based/polar_extent_simd.cpp
   object_based/gain_calculator_objects.cpp
   warnings.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/resources.hpp
-  ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/hoa_points_file.cpp
 )
 
 target_include_directories(ear
   PRIVATE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/submodules/kissfft>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # resources.hpp
   PUBLIC
   # Headers used from source/build location:
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
