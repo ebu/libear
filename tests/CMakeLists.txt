@@ -15,7 +15,7 @@ function(add_ear_test name)
   )
   add_test(
     NAME ${name}
-    COMMAND $<TARGET_FILE:${name}>
+    COMMAND ${name}
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/src"
   )
 endfunction()
