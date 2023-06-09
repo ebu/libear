@@ -75,7 +75,9 @@ namespace ear {
 
   Layout::Layout(std::string name, std::vector<Channel> channels,
                  boost::optional<Screen> screen)
-      : _name(name), _channels(channels), _screen(screen){};
+      : _name(std::move(name)),
+        _channels(std::move(channels)),
+        _screen(screen){};
 
   std::string Layout::name() const { return _name; }
   std::vector<Channel>& Layout::channels() { return _channels; }
