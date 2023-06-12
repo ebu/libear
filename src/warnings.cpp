@@ -1,9 +1,11 @@
 #include "ear/warnings.hpp"
-#include <iostream>
+#include <cstdio>
 
 namespace ear {
   void default_warning_cb_fn(const ear::Warning &warning) {
-    std::cerr << "libear: warning: " << warning.message << std::endl;
+    fputs("libear: warning: ", stderr);
+    fputs(warning.message.c_str(), stderr);
+    fputc('\n', stderr);
   }
 
   const WarningCB default_warning_cb = default_warning_cb_fn;
