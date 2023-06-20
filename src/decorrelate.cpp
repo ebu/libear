@@ -61,7 +61,8 @@ namespace ear {
   const int decorrelator_size = 512;
 
   template <>
-  std::vector<std::vector<double>> designDecorrelators<double>(Layout layout) {
+  std::vector<std::vector<double>> designDecorrelators<double>(
+      const Layout &layout) {
     std::vector<std::string> channelNames = layout.channelNames();
     std::vector<std::string> channelNamesSorted(channelNames);
     std::sort(channelNamesSorted.begin(), channelNamesSorted.end());
@@ -83,7 +84,7 @@ namespace ear {
 
   template <>
   EAR_EXPORT std::vector<std::vector<float>> designDecorrelators<float>(
-      Layout layout) {
+      const Layout &layout) {
     auto decorrelators = designDecorrelators<double>(layout);
     std::vector<std::vector<float>> decorrelators_float;
 

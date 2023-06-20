@@ -12,7 +12,8 @@ namespace ear {
    * @return Decorrelation filters.
    */
   template <typename T = float>
-  EAR_EXPORT std::vector<std::vector<T>> designDecorrelators(Layout layout);
+  EAR_EXPORT std::vector<std::vector<T>> designDecorrelators(
+      const Layout &layout);
 
   /** @brief Get the delay length needed to compensate for decorrelators
    *
