@@ -75,7 +75,7 @@ namespace ear {
 
     std::string name() const;
     std::vector<Channel>& channels();
-    std::vector<Channel> channels() const;
+    const std::vector<Channel>& channels() const;
     boost::optional<Screen> screen() const;
 
     void name(std::string name);
