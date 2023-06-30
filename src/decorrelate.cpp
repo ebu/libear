@@ -12,22 +12,14 @@ const double PI = boost::math::constants::pi<double>();
 
 namespace ear {
 
-  std::vector<long> genRandMt19937(int seed, int n) {
-    std::mt19937 mtRand(seed);
-    std::vector<long> ret;
-    for (int i = 0; i < n; ++i) {
-      ret.push_back(mtRand());
-    }
-    return ret;
-  }
+  namespace {
+    using RandEngine = std::mt19937;
 
-  std::vector<double> genRandFloat(int seed, int n) {
-    std::vector<double> ret;
-    for (long randomValue : genRandMt19937(seed, n)) {
-      ret.push_back(randomValue / static_cast<double>(0x100000000l));
+    template <typename Engine>
+    double genRandFloat(Engine &e) {
+      return e() / static_cast<double>(0x100000000l);
     }
-    return ret;
-  }
+  }  // namespace
 
   /** @brief Design an all-pass random-phase FIR filter.
    *
@@ -37,12 +29,12 @@ namespace ear {
    * @return  Filter coefficients.
    */
   std::vector<double> designDecorrelatorBasic(int decorrelatorId, int size) {
-    std::vector<double> rand = genRandFloat(decorrelatorId, size / 2 - 1);
+    RandEngine randEngine(decorrelatorId);
     std::vector<std::complex<double>> freqDomainData(size);
     freqDomainData[0] = std::complex<double>(1.0, 0.0);
-    for (size_t i = 0; i < rand.size(); ++i) {
-      freqDomainData[i + 1] =
-          std::exp(std::complex<double>(0.0, 2.0 * PI * rand[i]));
+    for (size_t i = 0; i < size / 2 - 1; ++i) {
+      freqDomainData[i + 1] = std::exp(
+          std::complex<double>(0.0, 2.0 * PI * genRandFloat(randEngine)));
     }
     freqDomainData[size / 2] = std::complex<double>(1.0, 0.0);
     for (size_t i = 0; i < freqDomainData.size() / 2; ++i) {
