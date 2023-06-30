@@ -36,7 +36,7 @@ namespace ear {
         boost::optional<std::pair<double, double>> elevationRange = boost::none,
         bool isLfe = false);
 
-    std::string name() const;
+    const std::string& name() const;
     PolarPosition polarPosition() const;
     PolarPosition polarPositionNominal() const;
     std::pair<double, double> azimuthRange() const;

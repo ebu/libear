@@ -16,7 +16,7 @@ namespace ear {
         _elevationRange(elevationRange),
         _isLfe(isLfe){};
 
-  std::string Channel::name() const { return _name; }
+  const std::string& Channel::name() const { return _name; }
   PolarPosition Channel::polarPosition() const { return _polarPosition; }
   PolarPosition Channel::polarPositionNominal() const {
     return get_optional_value_or(_polarPositionNominal, _polarPosition);
