@@ -53,44 +53,46 @@ namespace ear {
   const int decorrelator_size = 512;
 
   template <>
-  std::vector<std::vector<double>> designDecorrelators<double>(
-      const Layout &layout) {
-    std::vector<std::string> channelNames = layout.channelNames();
-    std::vector<std::string> channelNamesSorted(channelNames);
-    std::sort(channelNamesSorted.begin(), channelNamesSorted.end());
-    std::vector<std::vector<double>> decorrelators;
-    for (auto channelName : channelNames) {
-      auto it =
-          std::find_if(channelNamesSorted.begin(), channelNamesSorted.end(),
-                       [&channelName](const std::string name) -> bool {
-                         return channelName == name;
-                       });
-      int index =
-          static_cast<int>(std::distance(channelNamesSorted.begin(), it));
-      std::vector<double> coefficients =
-          designDecorrelatorBasic(index, decorrelator_size);
-      decorrelators.push_back(coefficients);
-    }
-    return decorrelators;
+  std::vector<double> designDecorrelator<double>(const Layout &layout,
+                                                 size_t channelIdx) {
+    auto &dec_channel_name = layout.channels().at(channelIdx).name();
+
+    // rather than sorting the channel names, then searching that to get an
+    // index, find what the index would be directly by scanning the channel
+    // list once
+    int dec_id = 0;
+    for (auto &channel : layout.channels())
+      if (channel.name() < dec_channel_name) dec_id++;
+
+    return designDecorrelatorBasic(dec_id, decorrelator_size);
   }
 
   template <>
-  EAR_EXPORT std::vector<std::vector<float>> designDecorrelators<float>(
-      const Layout &layout) {
-    auto decorrelators = designDecorrelators<double>(layout);
-    std::vector<std::vector<float>> decorrelators_float;
+  std::vector<float> designDecorrelator<float>(const Layout &layout,
+                                               size_t channelIdx) {
+    auto decorrelator = designDecorrelator<double>(layout, channelIdx);
 
-    for (auto &decorrelator : decorrelators) {
-      std::vector<float> decorrelator_float(decorrelator.size());
+    std::vector<float> decorrelator_float(decorrelator.size());
+    for (size_t sample_idx = 0; sample_idx < decorrelator.size(); sample_idx++)
+      decorrelator_float[sample_idx] = (float)decorrelator[sample_idx];
 
-      for (size_t i = 0; i < decorrelator.size(); i++)
-        decorrelator_float[i] = (float)decorrelator[i];
-
-      decorrelators_float.emplace_back(std::move(decorrelator_float));
-    }
-
-    return decorrelators_float;
+    return decorrelator_float;
   }
+
+  template <typename T>
+  std::vector<std::vector<T>> designDecorrelators(const Layout &layout) {
+    std::vector<std::vector<T>> decorrelators(layout.channels().size());
+    for (size_t channel_idx = 0; channel_idx < layout.channels().size();
+         channel_idx++)
+      decorrelators[channel_idx] = designDecorrelator<T>(layout, channel_idx);
+
+    return decorrelators;
+  }
+
+  template std::vector<std::vector<float>> EAR_EXPORT
+  designDecorrelators(const Layout &layout);
+  template std::vector<std::vector<double>> EAR_EXPORT
+  designDecorrelators(const Layout &layout);
 
   int decorrelatorCompensationDelay() { return (decorrelator_size - 1) / 2; }
 }  // namespace ear
