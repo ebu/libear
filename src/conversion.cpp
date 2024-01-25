@@ -268,7 +268,7 @@ namespace ear {
 
     void toPolar(ObjectsTypeMetadata &otm) {
       otm.cartesian =
-          boost::apply_visitor(guess_cartesian_flag{}, otm.position);
+          boost::apply_visitor(guess_cartesian_flag(), otm.position);
 
       if (otm.cartesian) {
         CartesianPosition cart_pos =
@@ -290,7 +290,7 @@ namespace ear {
 
     void toCartesian(ObjectsTypeMetadata &otm) {
       otm.cartesian =
-          boost::apply_visitor(guess_cartesian_flag{}, otm.position);
+          boost::apply_visitor(guess_cartesian_flag(), otm.position);
 
       if (!otm.cartesian) {
         PolarPosition polar_pos = boost::get<PolarPosition>(otm.position);
