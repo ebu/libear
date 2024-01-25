@@ -48,7 +48,6 @@ static void check_extent_equal(const ExtentParams &p1, const ExtentParams &p2) {
 }
 
 TEST_CASE("conversion_cartesian_polar_loop") {
-  double eps = 1e-6;
   for (double az : {0.0, -10.0, 10.0, 90.0, -90.0, 150.0, -150.0})
     for (double el : {0.0, -10.0, 10.0, -45.0, 45.0, -90.0, 90.0})
       for (double dist : {0.5, 1.0}) {
