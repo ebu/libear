@@ -32,10 +32,10 @@ TEST_CASE("test_speaker_label") {
   Layout layout = getLayout("4+5+0");
   GainCalculatorDirectSpeakers p(layout);
 
-  // DirectSpeakersTypeMetadata metadata;
   Gains actual(layout.channels().size());
-  for (const std::string& prefix :
-       {"", "urn:itu:bs:2051:0:speaker:", "urn:itu:bs:2051:1:speaker:"}) {
+  std::vector<std::string> prefixes = {
+      "", "urn:itu:bs:2051:0:speaker:", "urn:itu:bs:2051:1:speaker:"};
+  for (const std::string& prefix : prefixes) {
     // normal case
     p.calculate(tmWithLabels(std::vector<std::string>{prefix + "M+000"}),
                 actual);
