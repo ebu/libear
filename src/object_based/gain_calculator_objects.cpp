@@ -33,7 +33,7 @@ namespace ear {
   void GainCalculatorObjectsImpl::calculate(const ObjectsTypeMetadata& metadata,
                                             OutputGains& direct,
                                             OutputGains& diffuse,
-                                            const WarningCB& warning_cb) {
+                                            const WarningCB&) {
     if (metadata.cartesian) throw not_implemented("cartesian");
     boost::apply_visitor(throw_if_not_implemented(), metadata.position);
     boost::apply_visitor(throw_if_not_implemented(), metadata.objectDivergence);
