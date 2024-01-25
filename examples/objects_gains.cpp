@@ -4,7 +4,7 @@
 
 using namespace ear;
 
-int main(int argc, char **argv) {
+int main(int, char **) {
   // make the gain calculator
   Layout layout = getLayout("0+5+0");
   GainCalculatorObjects gc(layout);
