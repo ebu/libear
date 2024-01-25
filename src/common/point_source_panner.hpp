@@ -116,6 +116,8 @@ namespace ear {
     virtual boost::optional<Eigen::VectorXd> handle(
         Eigen::Vector3d position) = 0;
     virtual int numberOfOutputChannels() const = 0;
+
+    virtual ~PointSourcePanner();
   };
 
   /** @brief Wrapper around multiple regions.

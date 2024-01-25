@@ -224,6 +224,8 @@ namespace ear {
     return ret + 1;
   }
 
+  PointSourcePanner::~PointSourcePanner() {}
+
   PointSourcePannerDownmix::PointSourcePannerDownmix(
       std::shared_ptr<PointSourcePanner> psp, Eigen::MatrixXd downmix)
       : _psp(psp), _downmix(downmix){};
