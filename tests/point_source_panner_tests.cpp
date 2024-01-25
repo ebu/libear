@@ -151,22 +151,36 @@ TEST_CASE("extra_pos_vertical_nominal") {
     REQUIRE(downmix == expectedDownmix);
   };
 
-  SECTION("4+5+0/4+5+1") {
-    for (const std::string& layoutName : {"4+5+0", "4+5+1"}) {
-      Layout layout = getLayout("4+5+0").withoutLfe();
-      std::tie(extraChannels, downmix) = extraPosVerticalNominal(layout);
-      std::vector<PolarPosition> expectedPositions = {
-          PolarPosition(30.0, -30.0, 1.0), PolarPosition(-30.0, -30.0, 1.0),
-          PolarPosition(0.0, -30.0, 1.0), PolarPosition(110.0, -30.0, 1.0),
-          PolarPosition(-110.0, -30.0, 1.0)};
-      REQUIRE(extraChannels.size() == expectedPositions.size());
-      for (size_t i = 0; i < extraChannels.size(); ++i) {
-        REQUIRE(extraChannels[i].polarPosition() == expectedPositions[i]);
-      }
-      Eigen::MatrixXd expectedDownmix = createDownmixMatrixFromIndices(
-          std::vector<int>{0, 1, 2, 3, 4}, layout.channels().size());
-      REQUIRE(downmix == expectedDownmix);
+  SECTION("4+5+0") {
+    Layout layout = getLayout("4+5+0").withoutLfe();
+    std::tie(extraChannels, downmix) = extraPosVerticalNominal(layout);
+    std::vector<PolarPosition> expectedPositions = {
+        PolarPosition(30.0, -30.0, 1.0), PolarPosition(-30.0, -30.0, 1.0),
+        PolarPosition(0.0, -30.0, 1.0), PolarPosition(110.0, -30.0, 1.0),
+        PolarPosition(-110.0, -30.0, 1.0)};
+    REQUIRE(extraChannels.size() == expectedPositions.size());
+    for (size_t i = 0; i < extraChannels.size(); ++i) {
+      REQUIRE(extraChannels[i].polarPosition() == expectedPositions[i]);
     }
+    Eigen::MatrixXd expectedDownmix = createDownmixMatrixFromIndices(
+        std::vector<int>{0, 1, 2, 3, 4}, layout.channels().size());
+    REQUIRE(downmix == expectedDownmix);
+  };
+
+  SECTION("4+5+1") {
+    Layout layout = getLayout("4+5+1").withoutLfe();
+    std::tie(extraChannels, downmix) = extraPosVerticalNominal(layout);
+    std::vector<PolarPosition> expectedPositions = {
+        PolarPosition(110.0, -30.0, 1.0),
+        PolarPosition(-110.0, -30.0, 1.0),
+    };
+    REQUIRE(extraChannels.size() == expectedPositions.size());
+    for (size_t i = 0; i < extraChannels.size(); ++i) {
+      REQUIRE(extraChannels[i].polarPosition() == expectedPositions[i]);
+    }
+    Eigen::MatrixXd expectedDownmix = createDownmixMatrixFromIndices(
+        std::vector<int>{3, 4}, layout.channels().size());
+    REQUIRE(downmix == expectedDownmix);
   };
 
   SECTION("3+7+0") {
