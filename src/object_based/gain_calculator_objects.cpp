@@ -26,11 +26,7 @@ namespace ear {
   GainCalculatorObjectsImpl::GainCalculatorObjectsImpl(const Layout& layout)
       : _layout(layout),
         _pointSourcePanner(configurePolarPanner(_layout.withoutLfe())),
-        _screenEdgeLockHandler(ScreenEdgeLockHandler(_layout.screen())),
-        _screenScaleHandler(ScreenScaleHandler(_layout.screen())),
-        _channelLockHandler(ChannelLockHandler(_layout.withoutLfe())),
         _polarExtentPanner(_pointSourcePanner),
-        _zoneExclusionHandler(ZoneExclusionHandler(_layout.withoutLfe())),
         _isLfe(copy_vector<decltype(_isLfe)>(layout.isLfe())),
         _pvTmp(_pointSourcePanner->numberOfOutputChannels()){};
 

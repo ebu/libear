@@ -1,16 +1,12 @@
 #pragma once
 #include <memory>
-#include "../common/channel_lock.hpp"
 #include "../common/point_source_panner.hpp"
-#include "../common/screen_edge_lock.hpp"
-#include "../common/screen_scale.hpp"
 #include "ear/common_types.hpp"
 #include "ear/helpers/output_gains.hpp"
 #include "ear/layout.hpp"
 #include "ear/metadata.hpp"
 #include "ear/warnings.hpp"
 #include "polar_extent.hpp"
-#include "zone_exclusion.hpp"
 
 namespace ear {
 
@@ -33,11 +29,7 @@ namespace ear {
    private:
     Layout _layout;
     std::shared_ptr<PointSourcePanner> _pointSourcePanner;
-    ScreenEdgeLockHandler _screenEdgeLockHandler;
-    ScreenScaleHandler _screenScaleHandler;
-    ChannelLockHandler _channelLockHandler;
     PolarExtent _polarExtentPanner;
-    ZoneExclusionHandler _zoneExclusionHandler;
     Eigen::Array<bool, Eigen::Dynamic, 1> _isLfe;
     Eigen::VectorXd _pvTmp;
   };
