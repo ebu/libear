@@ -388,8 +388,7 @@ namespace ear {
     return boost::none;
   }
 
-  boost::optional<Eigen::VectorXd> AllocentricPanner::handle(
-      Eigen::Vector3d position) {
+  boost::optional<Eigen::VectorXd> AllocentricPanner::handle(Eigen::Vector3d) {
     return boost::none;
   }
 
