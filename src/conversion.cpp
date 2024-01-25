@@ -261,9 +261,9 @@ namespace ear {
     // wrappers for OTM
 
     struct guess_cartesian_flag : public boost::static_visitor<bool> {
-      bool operator()(const PolarPosition &pos) const { return false; }
+      bool operator()(const PolarPosition &) const { return false; }
 
-      bool operator()(const CartesianPosition &pos) const { return true; }
+      bool operator()(const CartesianPosition &) const { return true; }
     };
 
     void toPolar(ObjectsTypeMetadata &otm) {
