@@ -61,13 +61,18 @@ namespace ear {
     bool _isLfeChannel(const DirectSpeakersTypeMetadata& metadata,
                        const WarningCB& warning_cb);
 
-    SpeakerPosition _applyScreenEdgeLock(SpeakerPosition position);
+    PolarSpeakerPosition _applyScreenEdgeLock(PolarSpeakerPosition position);
+    CartesianSpeakerPosition _applyScreenEdgeLock(
+        CartesianSpeakerPosition position);
+    SpeakerPosition _applyScreenEdgeLock(const SpeakerPosition& position);
     boost::optional<int> _findChannelWithinBounds(
         const SpeakerPosition& position, bool isLfe, double tol);
     std::vector<std::pair<int, double>> _findCandidates(
         const PolarSpeakerPosition& position, bool isLfe, double tol);
     std::vector<std::pair<int, double>> _findCandidates(
         const CartesianSpeakerPosition& position, bool isLfe, double tol);
+    std::vector<std::pair<int, double>> _findCandidates(
+        const SpeakerPosition& position, bool isLfe, double tol);
 
     Layout _layout;
     std::shared_ptr<PointSourcePanner> _pointSourcePanner;

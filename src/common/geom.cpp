@@ -90,19 +90,13 @@ namespace ear {
     return Eigen::Vector3d(position.X, position.Y, position.Z);
   }
 
-  Eigen::Vector3d toCartesianVector3d(SpeakerPosition position) {
-    if (position.type() == typeid(PolarSpeakerPosition)) {
-      PolarSpeakerPosition pos = boost::get<PolarSpeakerPosition>(position);
-      return toCartesianVector3d(pos);
-    } else {
-      CartesianSpeakerPosition pos =
-          boost::get<CartesianSpeakerPosition>(position);
-      return toCartesianVector3d(pos);
-    }
-  }
-
   Eigen::Vector3d toCartesianVector3d(PolarSpeakerPosition position) {
     return cart(position.azimuth, position.elevation, position.distance);
+  }
+
+  Eigen::Vector3d toCartesianVector3d(SpeakerPosition position) {
+    return boost::apply_visitor(
+        [](const auto& p) { return toCartesianVector3d(p); }, position);
   }
 
   Eigen::Vector3d toCartesianVector3d(CartesianPosition position) {

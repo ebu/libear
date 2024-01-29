@@ -43,6 +43,16 @@ namespace ear {
 
       return true;
     }
+
+    // throws an exception if the given component is not implemented
+    struct throw_if_not_implemented : public boost::static_visitor<void> {
+      void operator()(const CartesianSpeakerPosition&) const {
+        throw not_implemented("Cartesian position");
+      }
+
+      template <typename T>
+      void operator()(const T&) const {}
+    };
   }  // namespace
 
   GainCalculatorDirectSpeakersImpl::GainCalculatorDirectSpeakersImpl(
@@ -73,21 +83,29 @@ namespace ear {
                           additionalSubstitutions.end());
   };
 
+  PolarSpeakerPosition GainCalculatorDirectSpeakersImpl::_applyScreenEdgeLock(
+      PolarSpeakerPosition pos) {
+    std::tie(pos.azimuth, pos.elevation) =
+        _screenEdgeLockHandler.handleAzimuthElevation(
+            pos.azimuth, pos.elevation, pos.screenEdgeLock);
+    return pos;
+  }
+
+  CartesianSpeakerPosition
+  GainCalculatorDirectSpeakersImpl::_applyScreenEdgeLock(
+      CartesianSpeakerPosition pos) {
+    std::tie(pos.X, pos.Y, pos.Z) = _screenEdgeLockHandler.handleVector(
+        toCartesianVector3d(pos), pos.screenEdgeLock);
+    return pos;
+  }
+
   SpeakerPosition GainCalculatorDirectSpeakersImpl::_applyScreenEdgeLock(
-      SpeakerPosition position) {
-    if (position.type() == typeid(PolarSpeakerPosition)) {
-      PolarSpeakerPosition pos = boost::get<PolarSpeakerPosition>(position);
-      std::tie(pos.azimuth, pos.elevation) =
-          _screenEdgeLockHandler.handleAzimuthElevation(
-              pos.azimuth, pos.elevation, pos.screenEdgeLock);
-      return pos;
-    } else {
-      CartesianSpeakerPosition pos =
-          boost::get<CartesianSpeakerPosition>(position);
-      std::tie(pos.X, pos.Y, pos.Z) = _screenEdgeLockHandler.handleVector(
-          toCartesianVector3d(pos), pos.screenEdgeLock);
-      return pos;
-    }
+      const SpeakerPosition& position) {
+    return boost::apply_visitor(
+        [this](const auto& p) {
+          return SpeakerPosition(_applyScreenEdgeLock(p));
+        },
+        position);
   }
 
   bool GainCalculatorDirectSpeakersImpl::_isLfeChannel(
@@ -191,18 +209,21 @@ namespace ear {
     return candidates;
   }
 
+  std::vector<std::pair<int, double>>
+  GainCalculatorDirectSpeakersImpl::_findCandidates(const SpeakerPosition& pos,
+                                                    bool isLfe, double tol) {
+    return boost::apply_visitor(
+        [isLfe, tol, this](const auto& p) {
+          return _findCandidates(p, isLfe, tol);
+        },
+        pos);
+  }
+
   boost::optional<int>
   GainCalculatorDirectSpeakersImpl::_findChannelWithinBounds(
       const SpeakerPosition& position, bool isLfe, double tol) {
-    std::vector<std::pair<int, double>> candidates;
-    if (position.type() == typeid(PolarSpeakerPosition)) {
-      PolarSpeakerPosition pos = boost::get<PolarSpeakerPosition>(position);
-      candidates = _findCandidates(pos, isLfe, tol);
-    } else {
-      CartesianSpeakerPosition pos =
-          boost::get<CartesianSpeakerPosition>(position);
-      candidates = _findCandidates(pos, isLfe, tol);
-    }
+    std::vector<std::pair<int, double>> candidates =
+        _findCandidates(position, isLfe, tol);
     if (candidates.size() == 0) {
       return boost::none;
     } else if (candidates.size() == 1) {
@@ -229,8 +250,7 @@ namespace ear {
           "speakerLabels as specified in the common definitions file");
     direct.check_size(_nChannels);
 
-    if (metadata.position.type() == typeid(CartesianSpeakerPosition))
-      throw not_implemented("Cartesian position");
+    boost::apply_visitor(throw_if_not_implemented(), metadata.position);
 
     double tol = 1e-5;
     bool isLfe = _isLfeChannel(metadata, warning_cb);
