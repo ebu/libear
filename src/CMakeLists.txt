@@ -8,6 +8,7 @@ generate_points_file(
 add_library(ear
   bs2051.cpp
   bs2051_layouts.cpp
+  c_api.cpp
   common/convex_hull.cpp
   common/facets.cpp
   common/geom.cpp
