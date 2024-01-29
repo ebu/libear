@@ -45,3 +45,9 @@ add_ear_test("gain_calculator_hoa_tests")
 add_ear_test("gain_calculator_objects_tests")
 add_ear_test("gain_interpolator_tests")
 add_ear_test("variable_block_size_tests")
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "wasm32|wasm64")
+  add_test(
+    NAME libear_js
+    COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/test_libear.mjs -- $<TARGET_FILE:ear_wasm>)
+endif()
