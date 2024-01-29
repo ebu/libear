@@ -145,6 +145,20 @@ endif()
 add_library(ear_handle_exceptions OBJECT handle_exceptions.cpp)
 target_link_libraries(ear_handle_exceptions PRIVATE ear)
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "wasm32|wasm64")
+  include(wasm)
+
+  add_library(ear_wasm SHARED wasm_api.cpp)
+
+  target_link_libraries(ear_wasm PRIVATE ear)
+
+  target_link_options(ear_wasm PRIVATE -nostartfiles -Wl,--no-entry)
+  target_link_options(ear_wasm PRIVATE ${wasm_export_flags})
+
+  set_target_properties(ear_wasm PROPERTIES LIBRARY_OUTPUT_NAME ear SUFFIX
+                                                                    ".wasm")
+endif()
+
 include(GenerateExportHeader)
 generate_export_header(ear
   EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/generated/export.hpp
@@ -208,5 +222,9 @@ if(EAR_PACKAGE_AND_INSTALL)
       PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}"
     )
     install(EXPORT earTargetsStatic DESTINATION ${INSTALL_CMAKE_DIR})
+  endif()
+
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "wasm32|wasm64")
+    install(TARGETS ear_wasm LIBRARY DESTINATION "${INSTALL_LIB_DIR}")
   endif()
 endif()
