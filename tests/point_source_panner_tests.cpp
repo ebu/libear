@@ -302,8 +302,10 @@ TEST_CASE("test_polar_point_source_panner") {
   }
 
   // should fail if not given enough channels
+#ifndef EAR_NO_EXCEPTIONS
   REQUIRE_THROWS(PolarPointSourcePanner(
       std::move(regions_1), static_cast<int>(positions.rows() - 1)));
+#endif
 
   std::vector<std::unique_ptr<RegionHandler>> regions_2;
   for (const auto& outputChannels : outputChannelsVec) {
@@ -518,6 +520,8 @@ TEST_CASE("configure_full_polar_panner") {
   };
 };
 
+#ifndef EAR_NO_EXCEPTIONS
+
 TEST_CASE("screen_loudspeaker_positions") {
   auto layout = getLayout("4+9+0").withoutLfe();
 
@@ -548,6 +552,8 @@ TEST_CASE("screen_loudspeaker_positions") {
     }
   }
 }
+
+#endif
 
 TEST_CASE("hull") {
   for (auto& layoutFull : loadLayouts()) {

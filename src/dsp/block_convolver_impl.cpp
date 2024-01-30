@@ -87,13 +87,13 @@ namespace ear {
         if (filter) {
           for (auto &block : filter->blocks)
             if ((size_t)block.size() != ctx->fd_size) {
-              throw invalid_argument(
+              ear_throw(invalid_argument(
                   "Filter block size is not equal to BlockConvolver block "
                   "size; "
-                  "was this created using the same context?");
+                  "was this created using the same context?"));
             }
           if (filter->num_blocks() > num_blocks)
-            throw invalid_argument("too many blocks in given Filter");
+            ear_throw(invalid_argument("too many blocks in given Filter"));
         }
       }
 
@@ -143,10 +143,10 @@ namespace ear {
       void BlockConvolver::process(const Eigen::Ref<const TDVector> &in,
                                    Eigen::Ref<TDVector> out) {
         if (in.data() != nullptr && (size_t)in.size() != ctx->block_size)
-          throw invalid_argument(
-              "in must be a null pointer or of size block_size");
+          ear_throw(invalid_argument(
+              "in must be a null pointer or of size block_size"));
         if ((size_t)out.size() != ctx->block_size)
-          throw invalid_argument("out must be of size block_size");
+          ear_throw(invalid_argument("out must be of size block_size"));
 
         auto first_half = Eigen::seqN(0, ctx->block_size);
         auto second_half = Eigen::seqN(ctx->block_size, ctx->block_size);

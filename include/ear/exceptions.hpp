@@ -4,6 +4,38 @@
 #include "export.hpp"
 
 namespace ear {
+
+/// support for building without exceptions
+///
+/// in the rest of the code, the ear_throw macro is used to throw exceptions,
+/// and normally this just throws the given exception
+///
+/// when exceptions are disabled, it instead calls ear::handle_exception with
+/// the exception object, and can be provided by users of the library
+///
+/// this callback must return out of the library (e.g. by abort or longjmp),
+/// and you can't assume that the library is in a reasonable state after this
+/// has happened, because clean-up that would normally be done during unwinding
+/// will not happen
+///
+/// this is really unfortunate, but the library was designed with use of C++
+/// exceptions in mind, so a lot of code would need to change to fix this
+///
+/// note that boost has a similar system which requires defining
+/// boost::throw_exception
+///
+/// an example of both is provided in src/handle_exceptions.cpp, which is used
+/// to build examples and tests
+#ifdef EAR_NO_EXCEPTIONS
+
+  [[noreturn]] void handle_exception(const std::exception &e);
+
+#define ear_throw(exc) ::ear::handle_exception(exc);
+
+#else
+#define ear_throw(exc) throw exc
+#endif
+
   /// thrown if features are used which are not yet implemented
   class EAR_EXPORT not_implemented : public std::runtime_error {
    public:

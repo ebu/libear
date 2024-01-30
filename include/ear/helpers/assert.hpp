@@ -5,11 +5,11 @@ namespace ear {
   // implementation for _assert_impl. This is wrapped in a macro so that we can
   // use __LINE__, __FILE__ etc. in the future.
   inline void _assert_impl(bool condition, const char *message) {
-    if (!condition) throw internal_error(message);
+    if (!condition) ear_throw(internal_error(message));
   }
 
   inline void _assert_impl(bool condition, const std::string &message) {
-    if (!condition) throw internal_error(message);
+    if (!condition) ear_throw(internal_error(message));
   }
 }  // namespace ear
 

@@ -81,7 +81,7 @@ namespace ear {
         if (insideAngleRange(az, sector.cart_end_az, sector.cart_start_az))
           return sector;
 
-      throw internal_error("could not find sector");
+      ear_throw(internal_error("could not find sector"));
     }
 
     static const Sector &find_polar_sector(double az) {
@@ -89,7 +89,7 @@ namespace ear {
         if (insideAngleRange(az, sector.polar_end_az, sector.polar_start_az))
           return sector;
 
-      throw internal_error("could not find sector");
+      ear_throw(internal_error("could not find sector"));
     }
 
     double map_az_to_linear(double left_az, double right_az, double azimuth) {

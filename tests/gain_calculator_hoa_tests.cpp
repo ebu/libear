@@ -36,6 +36,8 @@ TEST_CASE("warnings") {
   }
 }
 
+#ifndef EAR_NO_EXCEPTIONS
+
 TEST_CASE("exceptions") {
   Layout layout = getLayout("0+5+0");
   GainCalculatorHOA gc(layout);
@@ -71,3 +73,5 @@ TEST_CASE("exceptions") {
     REQUIRE_THROWS_AS(gc.calculate(tm, gains), invalid_argument);
   }
 }
+
+#endif

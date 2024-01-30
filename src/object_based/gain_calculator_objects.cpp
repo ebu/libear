@@ -11,13 +11,15 @@ namespace ear {
   // throws an exception if the given component is not implemented
   struct throw_if_not_implemented : public boost::static_visitor<void> {
     void operator()(const CartesianPosition&) const {
-      throw not_implemented("cartesian");
+      ear_throw(not_implemented("cartesian"));
     }
     void operator()(const PolarObjectDivergence& divergence) const {
-      if (divergence.divergence != 0.0) throw not_implemented("divergence");
+      if (divergence.divergence != 0.0)
+        ear_throw(not_implemented("divergence"));
     }
     void operator()(const CartesianObjectDivergence& divergence) const {
-      if (divergence.divergence != 0.0) throw not_implemented("divergence");
+      if (divergence.divergence != 0.0)
+        ear_throw(not_implemented("divergence"));
     }
     template <typename T>
     void operator()(const T&) const {}
@@ -34,13 +36,13 @@ namespace ear {
                                             OutputGains& direct,
                                             OutputGains& diffuse,
                                             const WarningCB&) {
-    if (metadata.cartesian) throw not_implemented("cartesian");
+    if (metadata.cartesian) ear_throw(not_implemented("cartesian"));
     boost::apply_visitor(throw_if_not_implemented(), metadata.position);
     boost::apply_visitor(throw_if_not_implemented(), metadata.objectDivergence);
-    if (metadata.channelLock.flag) throw not_implemented("channelLock");
+    if (metadata.channelLock.flag) ear_throw(not_implemented("channelLock"));
     if (metadata.zoneExclusion.zones.size())
-      throw not_implemented("zoneExclusion");
-    if (metadata.screenRef) throw not_implemented("screenRef");
+      ear_throw(not_implemented("zoneExclusion"));
+    if (metadata.screenRef) ear_throw(not_implemented("screenRef"));
 
     Eigen::Vector3d position =
         toCartesianVector3d(boost::get<PolarPosition>(metadata.position));
