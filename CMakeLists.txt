@@ -28,6 +28,12 @@ SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage"
 SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
 
 ############################################################
+# add new CMAKE_BUILD_TYPE CI
+############################################################
+set(SANITIZE_OPTIONS "-fsanitize=address -fsanitize=undefined")
+SET(CMAKE_CXX_FLAGS_CI "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -fno-omit-frame-pointer ${SANITIZE_OPTIONS}")
+
+############################################################
 # user config options
 ############################################################
 include(FeatureSummary)

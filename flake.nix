@@ -29,6 +29,9 @@
 
           packages.libear_clang = packages.libear.override { stdenv = pkgs.clangStdenv; };
 
+          packages.libear_ci = packages.libear.overrideAttrs { cmakeBuildType = "CI"; };
+          packages.libear_clang_ci = packages.libear_clang.overrideAttrs { cmakeBuildType = "CI"; };
+
           devShells.libear = packages.libear.overrideAttrs (attrs: {
             nativeBuildInputs = attrs.nativeBuildInputs ++ devtools;
           });
