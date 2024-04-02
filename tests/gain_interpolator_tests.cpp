@@ -210,7 +210,7 @@ TEST_CASE("vector") {
 
     process(interp_test, 0, input, tmp);
 
-    expected_output(Eigen::all, out) += tmp;
+    expected_output(Eigen::indexing::all, out) += tmp;
   };
   run_channel(0);
   run_channel(1);
@@ -242,9 +242,9 @@ TEST_CASE("matrix") {
     interp_test.interp_points.emplace_back(100, a[in][out]);
     interp_test.interp_points.emplace_back(200, b[in][out]);
 
-    process(interp_test, 0, input(Eigen::all, in), tmp);
+    process(interp_test, 0, input(Eigen::indexing::all, in), tmp);
 
-    expected_output(Eigen::all, out) += tmp;
+    expected_output(Eigen::indexing::all, out) += tmp;
   };
   run_channel(0, 0);
   run_channel(0, 1);

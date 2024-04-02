@@ -102,9 +102,10 @@ namespace ear {
                          Eigen::MatrixXd positions)
       : RegionHandler(outputChannels, positions) {
     _order = ngonVertexOrder(positions);
-    Eigen::MatrixXd reorderedPositions = positions(_order, Eigen::all);
+    Eigen::MatrixXd reorderedPositions =
+        positions(_order, Eigen::indexing::all);
     Eigen::MatrixXd reorderedAndShiftedPositions =
-        reorderedPositions(Eigen::Vector4i{1, 2, 3, 0}, Eigen::all);
+        reorderedPositions(Eigen::Vector4i{1, 2, 3, 0}, Eigen::indexing::all);
     _polyBasisX = _calcPolyBasis(reorderedPositions);
     _polyBasisY = _calcPolyBasis(reorderedAndShiftedPositions);
   };

@@ -22,8 +22,8 @@ TEST_CASE("delay_buffer") {
   Eigen::MatrixXf output = Eigen::MatrixXf::Zero(testlen, 5);
   Eigen::MatrixXf expected_output = Eigen::MatrixXf::Zero(testlen, 5);
 
-  expected_output(Eigen::seqN(delay, testlen - delay), Eigen::all) =
-      input(Eigen::seqN(0, testlen - delay), Eigen::all);
+  expected_output(Eigen::seqN(delay, testlen - delay), Eigen::indexing::all) =
+      input(Eigen::seqN(0, testlen - delay), Eigen::indexing::all);
 
   PtrAdapter in_ptrs(5), out_ptrs(5);
 
@@ -31,8 +31,8 @@ TEST_CASE("delay_buffer") {
   int offset = 0;
   for (auto &block_size : block_sizes) {
     auto block = Eigen::seqN(offset, block_size);
-    in_ptrs.set_eigen(input(block, Eigen::all));
-    out_ptrs.set_eigen(output(block, Eigen::all));
+    in_ptrs.set_eigen(input(block, Eigen::indexing::all));
+    out_ptrs.set_eigen(output(block, Eigen::indexing::all));
     db.process(block_size, in_ptrs.ptrs(), out_ptrs.ptrs());
     offset += block_size;
   }

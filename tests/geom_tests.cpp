@@ -136,9 +136,9 @@ TEST_CASE("test_order_vertices_random") {
       Eigen::VectorXi orderVec =
           Eigen::VectorXi::LinSpaced(numberOfNgons, 0, numberOfNgons);
       do {
-        unorderedNgon = orderedNgonRandomized(orderVec, Eigen::all);
+        unorderedNgon = orderedNgonRandomized(orderVec, Eigen::indexing::all);
         indices = ngonVertexOrder(unorderedNgon);
-        reorderedNgon = unorderedNgon(indices, Eigen::all);
+        reorderedNgon = unorderedNgon(indices, Eigen::indexing::all);
         REQUIRE(inSameOrder(reorderedNgon, orderedNgonRandomized));
       } while (std::next_permutation(orderVec.begin(), orderVec.end()));
     }
@@ -158,9 +158,9 @@ TEST_CASE("test_order_vertices_no_random") {
   Eigen::VectorXi orderVec = Eigen::VectorXi::LinSpaced(
       orderedNgon.rows(), 0, static_cast<int>(orderedNgon.rows()));
   do {
-    unorderedNgon = orderedNgon(orderVec, Eigen::all);
+    unorderedNgon = orderedNgon(orderVec, Eigen::indexing::all);
     indices = ngonVertexOrder(unorderedNgon);
-    reorderedNgon = unorderedNgon(indices, Eigen::all);
+    reorderedNgon = unorderedNgon(indices, Eigen::indexing::all);
     REQUIRE(inSameOrder(reorderedNgon, orderedNgon));
   } while (std::next_permutation(orderVec.begin(), orderVec.end()));
 }
