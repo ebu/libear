@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
         shared: [true, false]
-        build_type: [Release]
+        build_type: [CI]
         include:
           - os: windows-latest
             triplet: x64-windows
