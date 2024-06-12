@@ -121,7 +121,7 @@ namespace ear {
         while (cmp != 0) {
           last_block += cmp;
           if (cmp != first_cmp)
-            throw invalid_argument("interpolation points are not sorted");
+            ear_throw(invalid_argument("interpolation points are not sorted"));
           cmp = block_cmp(last_block, sample_idx);
         }
 

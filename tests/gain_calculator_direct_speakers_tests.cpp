@@ -223,6 +223,8 @@ TEST_CASE("test_dist_bounds_polar") {
   REQUIRE_VECTOR_APPROX(actual, directPv(layout, "T+000"));
 }
 
+#ifndef EAR_NO_EXCEPTIONS
+
 TEST_CASE("test_dist_bounds_cart", "[!shouldfail]") {
   Layout layout = getLayout("9+10+3");
   GainCalculatorDirectSpeakers p(layout);
@@ -276,6 +278,8 @@ TEST_CASE("test_dist_bounds_cart", "[!shouldfail]") {
   p.calculate(tm, actual);
   REQUIRE_VECTOR_APPROX(actual, directPv(layout, "M+030"));
 }
+
+#endif
 
 TEST_CASE("mapping") {
   auto layout = getLayout("4+5+0").withoutLfe();
@@ -338,6 +342,8 @@ TEST_CASE("mapping_per_input") {
   }
 }
 
+#ifndef EAR_NO_EXCEPTIONS
+
 TEST_CASE("not implemented") {
   auto layout = getLayout("4+7+0").withoutLfe();
   GainCalculatorDirectSpeakers p(layout);
@@ -377,6 +383,8 @@ TEST_CASE("adm errors") {
     REQUIRE_THROWS_AS(p.calculate(tm, gains), adm_error);
   }
 }
+
+#endif
 
 TEST_CASE("warnings") {
   auto layout = getLayout("4+7+0").withoutLfe();

@@ -8,6 +8,7 @@ generate_points_file(
 add_library(ear
   bs2051.cpp
   bs2051_layouts.cpp
+  c_api.cpp
   common/convex_hull.cpp
   common/facets.cpp
   common/geom.cpp
@@ -136,6 +137,28 @@ list(APPEND XSIMD_ARCHS xsimd::generic_for_dispatch)
 list(JOIN XSIMD_ARCHS "," XSIMD_ARCHS_STR)
 target_compile_definitions(ear PRIVATE "XSIMD_ARCHS=${XSIMD_ARCHS_STR}")
 
+if (EAR_NO_EXCEPTIONS)
+    target_compile_definitions(ear PUBLIC "EAR_NO_EXCEPTIONS")
+endif()
+# link executables to ear_handle_exceptions to support building without
+# exceptions; the comment at the top of exceptions.hpp explains how this works
+add_library(ear_handle_exceptions OBJECT handle_exceptions.cpp)
+target_link_libraries(ear_handle_exceptions PRIVATE ear)
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "wasm32|wasm64")
+  include(wasm)
+
+  add_library(ear_wasm SHARED wasm_api.cpp)
+
+  target_link_libraries(ear_wasm PRIVATE ear)
+
+  target_link_options(ear_wasm PRIVATE -nostartfiles -Wl,--no-entry)
+  target_link_options(ear_wasm PRIVATE ${wasm_export_flags})
+
+  set_target_properties(ear_wasm PROPERTIES LIBRARY_OUTPUT_NAME ear SUFFIX
+                                                                    ".wasm")
+endif()
+
 include(GenerateExportHeader)
 generate_export_header(ear
   EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/generated/export.hpp
@@ -199,5 +222,9 @@ if(EAR_PACKAGE_AND_INSTALL)
       PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}"
     )
     install(EXPORT earTargetsStatic DESTINATION ${INSTALL_CMAKE_DIR})
+  endif()
+
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "wasm32|wasm64")
+    install(TARGETS ear_wasm LIBRARY DESTINATION "${INSTALL_LIB_DIR}")
   endif()
 endif()

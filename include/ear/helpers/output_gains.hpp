@@ -39,7 +39,7 @@ namespace ear {
     OutputGainsT(std::vector<T> &vec) : vec(vec) {}
     virtual void check_size(size_t n) override {
       if (vec.size() != n) {
-        throw invalid_argument("incorrect size for output vector");
+        ear_throw(invalid_argument("incorrect size for output vector"));
       }
     }
     virtual size_t size() override { return vec.size(); }
@@ -84,11 +84,12 @@ namespace ear {
     OutputGainMatVecT(std::vector<std::vector<T>> &mat) : mat(mat) {}
     virtual void check_size(size_t rows, size_t cols) override {
       if (mat.size() != cols)
-        throw invalid_argument("incorrect number of cols in output matrix");
+        ear_throw(
+            invalid_argument("incorrect number of cols in output matrix"));
       for (auto &col : mat)
         if (col.size() != rows)
-          throw invalid_argument(
-              "incorrect number of rows in output matrix column");
+          ear_throw(invalid_argument(
+              "incorrect number of rows in output matrix column"));
     }
     virtual size_t rows() override { return mat[0].size(); }
     virtual size_t cols() override { return mat.size(); }

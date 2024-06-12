@@ -23,7 +23,9 @@ TEST_CASE("layout") {
           PolarPosition{-30.0, 0.0, 1.0});
 }
 
+#ifndef EAR_NO_EXCEPTIONS
 TEST_CASE("unkown_layout") { REQUIRE_THROWS(getLayout("wat")); }
+#endif
 
 TEST_CASE("all_positions_in_range") {
   std::vector<std::string> errors;

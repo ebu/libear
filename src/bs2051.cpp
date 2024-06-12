@@ -16,7 +16,7 @@ namespace ear {
         layouts.begin(), layouts.end(),
         [&name](const Layout& l) -> bool { return l.name() == name; });
     if (it == layouts.end()) {
-      throw unknown_layout(name);
+      ear_throw(unknown_layout(name));
     }
     return *it;
   }

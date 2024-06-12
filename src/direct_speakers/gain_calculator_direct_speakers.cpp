@@ -47,7 +47,7 @@ namespace ear {
     // throws an exception if the given component is not implemented
     struct throw_if_not_implemented : public boost::static_visitor<void> {
       void operator()(const CartesianSpeakerPosition&) const {
-        throw not_implemented("Cartesian position");
+        ear_throw(not_implemented("Cartesian position"));
       }
 
       template <typename T>
@@ -245,9 +245,9 @@ namespace ear {
       const DirectSpeakersTypeMetadata& metadata, OutputGains& direct,
       const WarningCB& warning_cb) {
     if (metadata.audioPackFormatID && metadata.speakerLabels.size() == 0)
-      throw adm_error(
+      ear_throw(adm_error(
           "common definitions audioPackFormatID specified without any "
-          "speakerLabels as specified in the common definitions file");
+          "speakerLabels as specified in the common definitions file"));
     direct.check_size(_nChannels);
 
     boost::apply_visitor(throw_if_not_implemented(), metadata.position);

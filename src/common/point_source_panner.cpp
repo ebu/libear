@@ -548,8 +548,8 @@ namespace ear {
         regions.push_back(
             boost::make_unique<QuadRegion>(outputChannels, positions));
       } else {
-        throw internal_error(
-            "facets with more than 4 vertices are not supported");
+        ear_throw(internal_error(
+            "facets with more than 4 vertices are not supported"));
       }
     }
     return std::make_shared<PointSourcePannerDownmix>(
@@ -563,15 +563,15 @@ namespace ear {
         double abs_az = std::abs(channel.polarPosition().azimuth);
         if (!((5.0 <= abs_az && abs_az < 25.0) ||
               (35.0 <= abs_az && abs_az < 60.0))) {
-          throw invalid_argument(
+          ear_throw(invalid_argument(
               "M+SC or M-SC has azimuth not in the allowed ranges of 5 to 25 "
-              "and 35 to 60 degrees");
+              "and 35 to 60 degrees"));
         }
 
         if (25.0 < abs_az) {
-          throw not_implemented(
+          ear_throw(not_implemented(
               "M+SC and M-SC with azimuths wider than 25 degrees are not "
-              "currently supported");
+              "currently supported"));
         }
       }
     }
@@ -587,7 +587,7 @@ namespace ear {
       const Layout& layout) {
     auto isLfe = layout.isLfe();
     if (find(isLfe.begin(), isLfe.end(), true) != isLfe.end()) {
-      throw internal_error("lfe channel passed to point source panner");
+      ear_throw(internal_error("lfe channel passed to point source panner"));
     }
 
     checkScreenSpeakers(layout);
